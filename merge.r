@@ -48,6 +48,7 @@ get_data <- function(prob_code,get_dual_diff){
     dual_stim <- c()
     mode <- c()
     framerate <- c()
+    practice <- c()
 
     client_info <- c()
 
@@ -78,6 +79,7 @@ get_data <- function(prob_code,get_dual_diff){
                 datetime <- append(datetime ,file$datetime)
                 framerate <- append(framerate ,file$framerate)
                 mode <- append(mode,rep("single",nrow(file)))
+            if (nrow(file) == 4) { practice <- append(practice,rep(TRUE,nrow(file))) } else{ practice <- append(practice,rep(FALSE,nrow(file))) }
 
             }
             else if (grepl("dual_phon",basename(filename),fixed=TRUE))
@@ -109,6 +111,7 @@ get_data <- function(prob_code,get_dual_diff){
                 framerate <- append(framerate ,file$framerate)
                 dual_stim <- append(dual_stim,file$dual_stim)
                 mode <- append(mode,rep("dual_phon",nrow(file)))
+            if (nrow(file) == 4) { practice <- append(practice,rep(TRUE,nrow(file))) } else{ practice <- append(practice,rep(FALSE,nrow(file))) }
 
             }
             else if (grepl("dual_vis",basename(filename),fixed=TRUE))
@@ -140,6 +143,7 @@ get_data <- function(prob_code,get_dual_diff){
                 framerate <- append(framerate ,file$framerate)
                 dual_stim <- append(dual_stim,file$dual_stim)
                 mode <- append(mode,rep("dual_vis",nrow(file)))
+            if (nrow(file) == 4) { practice <- append(practice,rep(TRUE,nrow(file))) } else{ practice <- append(practice,rep(FALSE,nrow(file))) }
             }
             else if (grepl("dual_rig",basename(filename),fixed=TRUE))
             {
@@ -163,6 +167,7 @@ get_data <- function(prob_code,get_dual_diff){
                 framerate <- append(framerate ,file$framerate)
                 dual_stim <- append(dual_stim,rep(NA,nrow(file)))
                 mode <- append(mode,rep("dual_rig",nrow(file)))
+            if (nrow(file) == 4) { practice <- append(practice,rep(TRUE,nrow(file))) } else{ practice <- append(practice,rep(FALSE,nrow(file))) }
 
             }
             else if (grepl("client_info",basename(filename),fixed=TRUE))
@@ -176,11 +181,12 @@ get_data <- function(prob_code,get_dual_diff){
             {
             }
 
+
         }
 
 
     }
-    data <- data.frame( rt_ord, correct_ord, ordered, ascending, descending, distance, datetime, rt_dual, correct_dual, mode,dual_stim)
+    data <- data.frame( rt_ord, correct_ord, ordered, ascending, descending, distance, datetime, rt_dual, correct_dual, mode,dual_stim,practice)
     prob_codes <- rep(prob_code,nrow(data))
     data["prob_code"] <- prob_codes
     data["dual_diff"] <- get_dual_diff(data$dual_stim)
@@ -192,8 +198,6 @@ get_data <- function(prob_code,get_dual_diff){
     }
 
     return(data)
-
-
 }
 
 
