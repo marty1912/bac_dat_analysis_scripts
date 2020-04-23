@@ -167,6 +167,7 @@ get_data <- function(prob_code,get_dual_diff){
             }
             else if (grepl("client_info",basename(filename),fixed=TRUE))
             {
+                client_info <- file
             }
             else if (grepl("stair_phon",basename(filename),fixed=TRUE))
             {
@@ -178,13 +179,17 @@ get_data <- function(prob_code,get_dual_diff){
         }
 
 
-
-
     }
     data <- data.frame( rt_ord, correct_ord, ordered, ascending, descending, distance, datetime, rt_dual, correct_dual, mode,dual_stim)
     prob_codes <- rep(prob_code,nrow(data))
     data["prob_code"] <- prob_codes
     data["dual_diff"] <- get_dual_diff(data$dual_stim)
+
+    if (length(client_info) != 0){
+        data["os"] <- rep(client_info$os[1],nrow(data))
+        data["screen_height"] <-rep( client_info$screen_height_t_ratio[1],nrow(data))
+        data["screen_width"] <-rep( client_info$screen_width_t_ratio[1],nrow(data))
+    }
 
     return(data)
 
@@ -212,20 +217,17 @@ prob_codes <- get_unique_prob_codes()
 all_data_frames <- list()
 for (i in seq_along(prob_codes)){
     data <- get_data(prob_codes[i],get_dual_diff)
-    print("---------------------------------------------")
-    print(data)
     if(nrow(data) != 0){
         all_data_frames[[i]] <- data
     }
     
 }
-print(all_data_frames)
 first_df <- all_data_frames[[1]]
 
 for (i in 2:length(all_data_frames)){
     first_df <- rbind(first_df,all_data_frames[[i]])
 }
 
-print(first_df)
+print(names(first_df))
 
 write.csv(first_df,file="all_data.csv",row.names=FALSE,na="")
