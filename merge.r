@@ -5,7 +5,7 @@ get_dual_diff <- function(vec){
     # calculate the difficulty of a given dual stim. because i forgot to add it in the experiment
     char_vec <- as.character(vec)
     difficulty <- c()
-    
+
     if (length(char_vec)== 0){
         return(difficulty)
     }
@@ -54,15 +54,18 @@ get_data <- function(prob_code,get_dual_diff){
 
     for (filename in filenames){
 
+
         if(grepl(prob_code,basename(filename),fixed=TRUE))
         {
+
             file <- read.csv(filename,sep=",",as.is=TRUE)
             fields <- names(file)
             if (grepl("single",basename(filename),fixed=TRUE))
             {
-                if ( "rt" %in% names("file")){
-                    rt_num <- append(file$rt)
-                    correct_num <- append(file$correct)
+
+                if ( "rt" %in% names(file)){
+                    rt_num <- append(rt_num,file$rt)
+                    correct_num <- append(correct_num,file$correct)
                 }
                 else{
                     # if the vector does not exist add it.
@@ -78,24 +81,26 @@ get_data <- function(prob_code,get_dual_diff){
                 distance <- append(distance ,file$distance)
                 datetime <- append(datetime ,file$datetime)
                 framerate <- append(framerate ,file$framerate)
+                dual_stim <- append(dual_stim,rep(NA,nrow(file)))
                 mode <- append(mode,rep("single",nrow(file)))
-            if (nrow(file) == 4) { practice <- append(practice,rep(TRUE,nrow(file))) } else{ practice <- append(practice,rep(FALSE,nrow(file))) }
+                if (nrow(file) == 4) { practice <- append(practice,rep(TRUE,nrow(file))) } else{ practice <- append(practice,rep(FALSE,nrow(file))) }
 
             }
             else if (grepl("dual_phon",basename(filename),fixed=TRUE))
             {
-                if ( "rt_num" %in% names("file")){
-                    rt_num <- append(file$rt_ord)
-                    correct_num <- append(file$correct_ord)
+
+                if ( "rt_ord" %in% names(file)){
+                    rt_num <- append(rt_num,file$rt_ord)
+                    correct_num <- append(correct_num,file$correct_ord)
                 }
                 else{
                     # if the vector does not exist add it.
                     rt_num <- append(rt_num,rep(NA,nrow(file)))
                     correct_num <- append(correct_num,rep(NA,nrow(file)))
                 }
-                if ( "rt_dual" %in% names("file")){
-                    rt_dual <- append(file$rt_dual)
-                    correct_dual <- append(file$correct_dual)
+                if ( "rt_dual" %in% names(file)){
+                    rt_dual <- append(rt_dual,file$rt_dual)
+                    correct_dual <- append(correct_dual,file$correct_dual)
                 }
                 else{
                     # if the vector does not exist add it.
@@ -111,23 +116,24 @@ get_data <- function(prob_code,get_dual_diff){
                 framerate <- append(framerate ,file$framerate)
                 dual_stim <- append(dual_stim,file$dual_stim)
                 mode <- append(mode,rep("dual_phon",nrow(file)))
-            if (nrow(file) == 4) { practice <- append(practice,rep(TRUE,nrow(file))) } else{ practice <- append(practice,rep(FALSE,nrow(file))) }
+                if (nrow(file) == 4) { practice <- append(practice,rep(TRUE,nrow(file))) } else{ practice <- append(practice,rep(FALSE,nrow(file))) }
 
             }
             else if (grepl("dual_vis",basename(filename),fixed=TRUE))
             {
-                if ( "rt_num" %in% names("file")){
-                    rt_num <- append(file$rt_ord)
-                    correct_num <- append(file$correct_ord)
+                if ( "rt_ord" %in% names(file)){
+                    rt_num <- append(rt_num,file$rt_ord)
+                    correct_num <- append(correct_num,file$correct_ord)
                 }
                 else{
                     # if the vector does not exist add it.
                     rt_num <- append(rt_num,rep(NA,nrow(file)))
                     correct_num <- append(correct_num,rep(NA,nrow(file)))
                 }
-                if ( "rt_dual" %in% names("file")){
-                    rt_dual <- append(file$rt_dual)
-                    correct_dual <- append(file$correct_dual)
+
+                if ( "rt_dual" %in% names(file)){
+                    rt_dual <- append(rt_dual,file$rt_dual)
+                    correct_dual <- append(correct_dual,file$correct_dual)
                 }
                 else{
                     # if the vector does not exist add it.
@@ -143,13 +149,13 @@ get_data <- function(prob_code,get_dual_diff){
                 framerate <- append(framerate ,file$framerate)
                 dual_stim <- append(dual_stim,file$dual_stim)
                 mode <- append(mode,rep("dual_vis",nrow(file)))
-            if (nrow(file) == 4) { practice <- append(practice,rep(TRUE,nrow(file))) } else{ practice <- append(practice,rep(FALSE,nrow(file))) }
+                if (nrow(file) == 4) { practice <- append(practice,rep(TRUE,nrow(file))) } else{ practice <- append(practice,rep(FALSE,nrow(file))) }
             }
             else if (grepl("dual_rig",basename(filename),fixed=TRUE))
             {
-                if ( "rt" %in% names("file")){
-                    rt_num <- append(file$rt)
-                    correct_num <- append(file$correct)
+                if ( "rt" %in% names(file)){
+                    rt_num <- append(rt_num,file$rt)
+                    correct_num <- append(correct_num,file$correct)
                 }
                 else{
                     # if the vector does not exist add it.
@@ -167,7 +173,7 @@ get_data <- function(prob_code,get_dual_diff){
                 framerate <- append(framerate ,file$framerate)
                 dual_stim <- append(dual_stim,rep(NA,nrow(file)))
                 mode <- append(mode,rep("dual_rig",nrow(file)))
-            if (nrow(file) == 4) { practice <- append(practice,rep(TRUE,nrow(file))) } else{ practice <- append(practice,rep(FALSE,nrow(file))) }
+                if (nrow(file) == 4) { practice <- append(practice,rep(TRUE,nrow(file))) } else{ practice <- append(practice,rep(FALSE,nrow(file))) }
 
             }
             else if (grepl("client_info",basename(filename),fixed=TRUE))
@@ -186,9 +192,9 @@ get_data <- function(prob_code,get_dual_diff){
 
 
     }
-    data <- data.frame( rt_num, correct_num, ordered, ascending, descending, distance, datetime, rt_dual, correct_dual, mode,dual_stim,practice)
-    prob_codes <- rep(prob_code,nrow(data))
-    data["prob_code"] <- prob_codes
+
+    prob_code <- rep(prob_code,length(rt_num))
+    data <- data.frame(prob_code, rt_num, correct_num, ordered, ascending, descending, distance, datetime, rt_dual, correct_dual, mode,dual_stim,practice)
     data["dual_diff"] <- get_dual_diff(data$dual_stim)
 
     if (length(client_info) != 0){
@@ -221,15 +227,17 @@ prob_codes <- get_unique_prob_codes()
 all_data_frames <- list()
 for (i in seq_along(prob_codes)){
     data <- get_data(prob_codes[i],get_dual_diff)
-    if(nrow(data) != 0){
-        all_data_frames[[i]] <- data
-    }
-    
+    #if(nrow(data) != 0){
+    all_data_frames[[i]] <- data
+    # }
+
 }
 first_df <- all_data_frames[[1]]
 
+if (length(all_data_frames) > 1){
 for (i in 2:length(all_data_frames)){
     first_df <- rbind(first_df,all_data_frames[[i]])
+}
 }
 
 print(names(first_df))
