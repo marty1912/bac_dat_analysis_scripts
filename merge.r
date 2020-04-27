@@ -35,8 +35,8 @@ get_data <- function(prob_code,get_dual_diff){
     filenames <- list.files("data/",pattern="*.csv$",full.names=TRUE)
 
     # get a vec for every col
-    rt_ord <- c()
-    correct_ord <- c()
+    rt_num <- c()
+    correct_num <- c()
 
     ordered <- c()
     ascending <- c()
@@ -61,13 +61,13 @@ get_data <- function(prob_code,get_dual_diff){
             if (grepl("single",basename(filename),fixed=TRUE))
             {
                 if ( "rt" %in% names("file")){
-                    rt_ord <- append(file$rt)
-                    correct_ord <- append(file$correct)
+                    rt_num <- append(file$rt)
+                    correct_num <- append(file$correct)
                 }
                 else{
                     # if the vector does not exist add it.
-                    rt_ord <- append(rt_ord,rep(NA,nrow(file)))
-                    correct_ord <- append(correct_ord,rep(NA,nrow(file)))
+                    rt_num <- append(rt_num,rep(NA,nrow(file)))
+                    correct_num <- append(correct_num,rep(NA,nrow(file)))
                 }
 
                 rt_dual <- append(rt_dual,rep(NA,nrow(file)))
@@ -84,14 +84,14 @@ get_data <- function(prob_code,get_dual_diff){
             }
             else if (grepl("dual_phon",basename(filename),fixed=TRUE))
             {
-                if ( "rt_ord" %in% names("file")){
-                    rt_ord <- append(file$rt_ord)
-                    correct_ord <- append(file$correct_ord)
+                if ( "rt_num" %in% names("file")){
+                    rt_num <- append(file$rt_ord)
+                    correct_num <- append(file$correct_ord)
                 }
                 else{
                     # if the vector does not exist add it.
-                    rt_ord <- append(rt_ord,rep(NA,nrow(file)))
-                    correct_ord <- append(correct_ord,rep(NA,nrow(file)))
+                    rt_num <- append(rt_num,rep(NA,nrow(file)))
+                    correct_num <- append(correct_num,rep(NA,nrow(file)))
                 }
                 if ( "rt_dual" %in% names("file")){
                     rt_dual <- append(file$rt_dual)
@@ -116,14 +116,14 @@ get_data <- function(prob_code,get_dual_diff){
             }
             else if (grepl("dual_vis",basename(filename),fixed=TRUE))
             {
-                if ( "rt_ord" %in% names("file")){
-                    rt_ord <- append(file$rt_ord)
-                    correct_ord <- append(file$correct_ord)
+                if ( "rt_num" %in% names("file")){
+                    rt_num <- append(file$rt_ord)
+                    correct_num <- append(file$correct_ord)
                 }
                 else{
                     # if the vector does not exist add it.
-                    rt_ord <- append(rt_ord,rep(NA,nrow(file)))
-                    correct_ord <- append(correct_ord,rep(NA,nrow(file)))
+                    rt_num <- append(rt_num,rep(NA,nrow(file)))
+                    correct_num <- append(correct_num,rep(NA,nrow(file)))
                 }
                 if ( "rt_dual" %in% names("file")){
                     rt_dual <- append(file$rt_dual)
@@ -148,13 +148,13 @@ get_data <- function(prob_code,get_dual_diff){
             else if (grepl("dual_rig",basename(filename),fixed=TRUE))
             {
                 if ( "rt" %in% names("file")){
-                    rt_ord <- append(file$rt)
-                    correct_ord <- append(file$correct)
+                    rt_num <- append(file$rt)
+                    correct_num <- append(file$correct)
                 }
                 else{
                     # if the vector does not exist add it.
-                    rt_ord <- append(rt_ord,rep(NA,nrow(file)))
-                    correct_ord <- append(correct_ord,rep(NA,nrow(file)))
+                    rt_num <- append(rt_num,rep(NA,nrow(file)))
+                    correct_num <- append(correct_num,rep(NA,nrow(file)))
                 }
 
                 rt_dual <- append(rt_dual,rep(NA,nrow(file)))
@@ -186,7 +186,7 @@ get_data <- function(prob_code,get_dual_diff){
 
 
     }
-    data <- data.frame( rt_ord, correct_ord, ordered, ascending, descending, distance, datetime, rt_dual, correct_dual, mode,dual_stim,practice)
+    data <- data.frame( rt_num, correct_num, ordered, ascending, descending, distance, datetime, rt_dual, correct_dual, mode,dual_stim,practice)
     prob_codes <- rep(prob_code,nrow(data))
     data["prob_code"] <- prob_codes
     data["dual_diff"] <- get_dual_diff(data$dual_stim)

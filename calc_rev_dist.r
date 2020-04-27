@@ -4,8 +4,8 @@ dat <- read.csv("all_data.csv")
 
 unique_prob_codes <- unique(dat$prob_code)
 
-dat <- dat %>% filter(practice == FALSE)  %>% filter(correct_ord == TRUE)%>% filter(is.na(rt_ord)== FALSE) %>% 
-    group_by(prob_code,mode,ordered,distance)   %>% summarise(mean_rt= mean(rt_ord,rm.na=TRUE))
+dat <- dat %>% filter(practice == FALSE)  %>% filter(correct_num == TRUE)%>% filter(is.na(rt_num)== FALSE) %>% 
+    group_by(prob_code,mode,ordered,distance)   %>% summarise(mean_rt= mean(rt_num,rm.na=TRUE))
 
 print(dat)
 
