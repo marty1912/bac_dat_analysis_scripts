@@ -34,6 +34,7 @@ get_data <- function(prob_code,get_dual_diff){
 
     filenames <- list.files("data/",pattern="*.csv$",full.names=TRUE)
 
+    print(prob_code)
     # get a vec for every col
     rt_num <- c()
     correct_num <- c()
@@ -49,6 +50,7 @@ get_data <- function(prob_code,get_dual_diff){
     mode <- c()
     framerate <- c()
     practice <- c()
+    numbers <- c()
 
     client_info <- c()
 
@@ -76,6 +78,7 @@ get_data <- function(prob_code,get_dual_diff){
                 rt_dual <- append(rt_dual,rep(NA,nrow(file)))
                 correct_dual <- append(correct_dual,rep(NA,nrow(file)))
                 ordered <- append(ordered ,file$ordered)
+                numbers<- append(numbers,file$numbers)
                 ascending <- append(ascending ,file$ascending)
                 descending <- append(descending ,file$descending)
                 distance <- append(distance ,file$distance)
@@ -109,6 +112,7 @@ get_data <- function(prob_code,get_dual_diff){
                 }
 
                 ordered <- append(ordered ,file$ordered)
+                numbers<- append(numbers,file$numbers)
                 ascending <- append(ascending ,file$ascending)
                 descending <- append(descending ,file$descending)
                 distance <- append(distance ,file$distance)
@@ -142,6 +146,7 @@ get_data <- function(prob_code,get_dual_diff){
                 }
 
                 ordered <- append(ordered ,file$ordered)
+                numbers<- append(numbers,file$numbers)
                 ascending <- append(ascending ,file$ascending)
                 descending <- append(descending ,file$descending)
                 distance <- append(distance ,file$distance)
@@ -167,6 +172,7 @@ get_data <- function(prob_code,get_dual_diff){
                 correct_dual <- append(correct_dual,rep(NA,nrow(file)))
                 ordered <- append(ordered ,file$ordered)
                 ascending <- append(ascending ,file$ascending)
+                numbers<- append(numbers,file$numbers)
                 descending <- append(descending ,file$descending)
                 distance <- append(distance ,file$distance)
                 datetime <- append(datetime ,file$datetime)
@@ -194,7 +200,7 @@ get_data <- function(prob_code,get_dual_diff){
     }
 
     prob_code <- rep(prob_code,length(rt_num))
-    data <- data.frame(prob_code, rt_num, correct_num, ordered, ascending, descending, distance, datetime, rt_dual, correct_dual, mode,dual_stim,practice)
+    data <- data.frame(prob_code, rt_num, correct_num,numbers, ordered, ascending, descending, distance, datetime, rt_dual, correct_dual, mode,dual_stim,practice)
     data["dual_diff"] <- get_dual_diff(data$dual_stim)
 
     if (length(client_info) != 0){
@@ -211,6 +217,8 @@ get_unique_prob_codes <- function(){
     filenames <- list.files("data/",pattern="*.csv$",full.names=TRUE)
     all_prob_codes <- c()
     for (filename in filenames){
+
+        print(filename)
         file <- read.csv(filename)
         # we dont have a prob code for client info but it does not really matter because its in the filename
         if ("prob_code" %in% colnames(file)){

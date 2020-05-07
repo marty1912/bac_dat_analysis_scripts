@@ -1,6 +1,7 @@
 library(dplyr)
 
-dat <- read.csv("all_data.csv")
+#dat <- read.csv("all_data.csv")
+dat <- read.csv("data_cleaned.csv")
 
 unique_prob_codes <- unique(dat$prob_code)
 
@@ -23,3 +24,11 @@ dat$dist_effect <- dat$mean_rt.1 - dat$mean_rt.2
 dat$dist_effect_normed <- (dat$mean_rt.1 - dat$mean_rt.2)/((dat$mean_rt.2 + dat$mean_rt.1)/2)
 
 write.csv(dat,file="data_with_dist_effect.csv",row.names=FALSE,na="")
+
+
+dat <- reshape(dat, idvar=c("prob_code","mode"), timevar = c("ordered"), direction="wide")
+dat <- reshape(dat, idvar=c("prob_code"), timevar = c("mode"), direction="wide")
+
+write.csv(dat,file="data_with_dist_effect_1rpP.csv",row.names=FALSE,na="")
+
+
