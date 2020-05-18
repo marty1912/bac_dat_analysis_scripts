@@ -45,6 +45,7 @@ dat_exclude <- unique(dat_exclude)
 print("excluded total:")
 print(dat_exclude)
 print(nrow(dat_exclude))
+write.csv(dat_exclude,file="excluded_participants_p_mode.csv",row.names=FALSE,na="")
 
 filter_out_prob_codes_per_mode <- function(data ,exclude_prob_code_mode){
     for (m in unique(exclude_prob_code_mode$mode)){
@@ -64,16 +65,30 @@ dat <- filter_out_prob_codes_per_mode(dat,dat_exclude)
 dat <- dat %>% filter(is.na(rt_num) |  rt_num > 0.150)  %>% filter(is.na(rt_dual) | rt_dual > 0.150)
 
 mean_rt_num = mean(dat$rt_num,na.rm=TRUE)
-mean_rt_dual = mean(dat$rt_dual,na.rm=TRUE)
+mean_rt_dual_phon = mean(dat$rt_dual[(dat$mode == "dual_phon")],na.rm=TRUE)
+mean_rt_dual_vis = mean(dat$rt_dual[(dat$mode == "dual_vis")],na.rm=TRUE)
 
 sd_rt_num = sd(dat$rt_num,na.rm=TRUE)
-sd_rt_dual = sd(dat$rt_dual,na.rm=TRUE)
+sd_rt_dual_phon = sd(dat$rt_dual[(dat$mode == "dual_phon")],na.rm=TRUE)
+sd_rt_dual_vis = sd(dat$rt_dual[(dat$mode == "dual_vis")],na.rm=TRUE)
 
 
-dat <- dat %>% filter(is.na(rt_num) |  ((rt_num > mean_rt_num -3*sd_rt_num) & (rt_num < mean_rt_num +3*sd_rt_num)))  #%>% 
-#    filter(is.na(rt_dual) |  ((rt_dual > mean_rt_dual -3*sd_rt_dual) & (rt_dual < mean_rt_dual +3*sd_rt_dual))) 
+# exclude trials with rt more than 3 sds from the mean. 
+dat <- dat %>% filter(is.na(rt_num) |  ((rt_num > mean_rt_num -3*sd_rt_num) & (rt_num < mean_rt_num +3*sd_rt_num)))  %>% 
+    filter(is.na(rt_dual) |  ((rt_dual> mean_rt_dual_phon -3*sd_rt_dual_phon) & (rt_dual< mean_rt_dual_phon +3*sd_rt_dual_phon))) %>%
+    filter(is.na(rt_dual) |  ((rt_dual> mean_rt_dual_vis -3*sd_rt_dual_vis) & (rt_dual< mean_rt_dual_vis +3*sd_rt_dual_vis))) 
 
-# TODO: dual für phon vis getrennt ausschließen!!
-# TODO: get list of excluded participants.
+
+# TODO: add the concerning mode
+all_participants =  read.csv("all_data.csv")
+all_participants =  unique((all_participants["prob_code"]))
+all_participants = as.character(as.matrix(all_participants))
+clean_participants =  unique(dat["prob_code"])
+clean_participants = as.character(as.matrix(clean_participants["prob_code"]))
+
+excluded_participants = all_participants[!(all_participants %in% clean_participants)]
+excluded_participants = as.data.frame(excluded_participants)
+write.csv(excluded_participants,file="excluded_participants.csv",row.names=FALSE,na="")
 
 write.csv(dat,file="data_cleaned.csv",row.names=FALSE,na="")
+
