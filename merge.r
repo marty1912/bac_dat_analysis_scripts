@@ -34,6 +34,7 @@ get_data <- function(prob_code,get_dual_diff){
 
     filenames <- list.files("data/",pattern="*.csv$",full.names=TRUE)
 
+    print("code:")
     print(prob_code)
     # get a vec for every col
     rt_num <- c()
@@ -57,9 +58,8 @@ get_data <- function(prob_code,get_dual_diff){
     for (filename in filenames){
 
 
-        if(grepl(prob_code,basename(filename),fixed=TRUE))
+        if(startsWith(basename(filename),prob_code))
         {
-
             file <- read.csv(filename,sep=",",as.is=TRUE)
             fields <- names(file)
             if (grepl("single",basename(filename),fixed=TRUE))
@@ -218,12 +218,14 @@ get_unique_prob_codes <- function(){
     all_prob_codes <- c()
     for (filename in filenames){
 
-        print(filename)
-        file <- read.csv(filename)
+        #print(filename)
+        file <- read.csv(filename,stringsAsFactors=FALSE,colClasses=c('character'))
         # we dont have a prob code for client info but it does not really matter because its in the filename
         if ("prob_code" %in% colnames(file)){
             prob_code <- toString(file$prob_code[1])
-            all_prob_codes <- append(all_prob_codes,prob_code)
+            if (prob_code != ""){
+                all_prob_codes <- append(all_prob_codes,prob_code)
+            }
         }
 
     }
