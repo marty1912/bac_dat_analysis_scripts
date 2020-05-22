@@ -1,4 +1,5 @@
 library(dplyr)
+library(snpar)
 
 get_dual_diff <- function(vec){
 
@@ -34,8 +35,6 @@ get_data <- function(prob_code,get_dual_diff){
 
     filenames <- list.files("data/",pattern="*.csv$",full.names=TRUE)
 
-    print("code:")
-    print(prob_code)
     # get a vec for every col
     rt_num <- c()
     correct_num <- c()
@@ -52,6 +51,10 @@ get_data <- function(prob_code,get_dual_diff){
     framerate <- c()
     practice <- c()
     numbers <- c()
+    rig_randomness_p <- NA
+    rig_randomness_runs <- NA
+    rig_randomness_1s <- NA
+    rig_randomness_0s <- NA
 
     client_info <- c()
 
@@ -192,6 +195,58 @@ get_data <- function(prob_code,get_dual_diff){
             else if (grepl("stair_vis",basename(filename),fixed=TRUE))
             {
             }
+            else if (grepl("rig_practice",basename(filename),fixed=TRUE))
+            {
+            }
+            else if (grepl("rig",basename(filename),fixed=TRUE))
+            {
+                # TODO: get median distance. and use as by
+                distances <- c()
+                for (i in 1:(length(file$rt)-1)){
+                    distances <- append(distances,(file$rt[i+1] - file$rt[i]))
+                }
+
+
+                is_in_interval_vec <- c()
+
+                # TODO: check how many distances are above or below the median.
+                print("rig test ")
+                print("median")
+                print(median(distances))
+                # TODO: find the duration of the task
+                # TODO: use max time
+                interval_vec <- seq(from = 0, to = max(file$rt), by = median(distances))
+                for (i in 1:(length(interval_vec)-1)){
+
+                    between <- file  %>% filter(rt < interval_vec[i+1]) %>% filter(rt > interval_vec[i])
+
+                    if(nrow(between) != 0){
+
+                    is_in_interval_vec <- append(is_in_interval_vec,1)
+                    }
+                    else{
+                    is_in_interval_vec <- append(is_in_interval_vec,0)
+                    }
+
+                }
+
+                is_in_interval_vec <- unlist(is_in_interval_vec)
+                print(is_in_interval_vec,use.names = FALSE)
+
+                runs_test <- runs.test(is_in_interval_vec, exact = FALSE, alternative = c("two.sided"))
+                print(runs_test)
+
+                rig_randomness_p <- runs_test$p.value
+
+                rig_randomness_runs <- runs_test$statistic
+                rig_randomness_1s <- length(is_in_interval_vec[is_in_interval_vec == 1])
+                rig_randomness_0s <- length(is_in_interval_vec[is_in_interval_vec == 0])
+                print(rig_randomness_0s)
+                print(rig_randomness_1s)
+                print(rig_randomness_runs)
+                print(names(runs_test))
+
+            }
 
 
         }
@@ -200,7 +255,12 @@ get_data <- function(prob_code,get_dual_diff){
     }
 
     prob_code <- rep(prob_code,length(rt_num))
-    data <- data.frame(prob_code, rt_num, correct_num,numbers, ordered, ascending, descending, distance, datetime, rt_dual, correct_dual, mode,dual_stim,practice)
+    rig_randomness_p <- rep(rig_randomness_p,length(rt_num))
+    rig_randomness_runs <- rep(rig_randomness_runs,length(rt_num))
+    rig_randomness_1s <- rep(rig_randomness_1s,length(rt_num))
+    rig_randomness_0s <- rep(rig_randomness_0s,length(rt_num))
+
+    data <- data.frame(prob_code, rt_num, correct_num,numbers, ordered, ascending, descending, distance, datetime, rt_dual, correct_dual, mode,dual_stim,practice,rig_randomness_p,rig_randomness_runs,rig_randomness_1s,rig_randomness_0s)
     data["dual_diff"] <- get_dual_diff(data$dual_stim)
 
     if (length(client_info) != 0){

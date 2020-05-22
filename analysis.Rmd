@@ -1,0 +1,38 @@
+
+## test
+
+ ```{r}
+
+dat <- read.csv("data_with_dist_effect_1rpP.csv")
+
+t.test.stuff <- function(x,y){
+t_test <- t.test(x,y,paired=TRUE,alternative="two.sided")
+(t_test)
+}
+
+message("t-tests for distance effect")
+
+t.test.single <- t.test.stuff(dat$mean_rt.1.FALSE.single,dat$mean_rt.2.FALSE.single)
+t.test.stuff(dat$mean_rt.1.FALSE.dual_phon,dat$mean_rt.2.FALSE.dual_phon)
+t.test.stuff(dat$mean_rt.1.FALSE.dual_vis,dat$mean_rt.2.FALSE.dual_vis)
+t.test.stuff(dat$mean_rt.1.FALSE.dual_rig,dat$mean_rt.2.FALSE.dual_rig)
+
+
+message("t-tests for rev distance effect")
+t.test.stuff(dat$mean_rt.1.TRUE.single,dat$mean_rt.2.TRUE.single)
+t.test.stuff(dat$mean_rt.1.TRUE.dual_phon,dat$mean_rt.2.TRUE.dual_phon)
+t.test.stuff(dat$mean_rt.1.TRUE.dual_vis,dat$mean_rt.2.TRUE.dual_vis)
+t.test.stuff(dat$mean_rt.1.TRUE.dual_rig,dat$mean_rt.2.TRUE.dual_rig)
+
+message("t-tests for rev distance effect group compare")
+t.test.stuff(dat$mean_rt.1.TRUE.single,dat$mean_rt.2.TRUE.single)
+t.test.stuff(dat$mean_rt.1.TRUE.dual_phon,dat$mean_rt.2.TRUE.dual_phon)
+t.test.stuff(dat$mean_rt.1.TRUE.dual_vis,dat$mean_rt.2.TRUE.dual_vis)
+t.test.stuff(dat$mean_rt.1.TRUE.dual_rig,dat$mean_rt.2.TRUE.dual_rig)
+
+#### Rscript -e 'library(rmarkdown); rmarkdown::render("analysis.Rmd", "pdf_document",params = list(filename = "analysis.pdf"))'
+
+```
+
+
+`r t.test.single` 
