@@ -63,6 +63,10 @@ get_data <- function(prob_code,get_dual_diff){
 
         if(startsWith(basename(filename),prob_code))
         {
+
+
+            message(paste("filename: ",filename))
+
             file <- read.csv(filename,sep=",",as.is=TRUE)
             fields <- names(file)
             if (grepl("single",basename(filename),fixed=TRUE))
@@ -200,6 +204,8 @@ get_data <- function(prob_code,get_dual_diff){
             }
             else if (grepl("rig",basename(filename),fixed=TRUE))
             {
+
+                message(paste("filename: in rig ",filename))
                 # TODO: get median distance. and use as by
                 distances <- c()
                 for (i in 1:(length(file$rt)-1)){
@@ -215,7 +221,10 @@ get_data <- function(prob_code,get_dual_diff){
                 print(median(distances))
                 # TODO: find the duration of the task
                 # TODO: use max time
-                interval_vec <- seq(from = 0, to = max(file$rt), by = median(distances))
+
+                # selector for one method or the other.
+                if (FALSE){
+                interval_vec <- seq(from = 0, to = max(file$rt), by = 1)#median(distances))
                 for (i in 1:(length(interval_vec)-1)){
 
                     between <- file  %>% filter(rt < interval_vec[i+1]) %>% filter(rt > interval_vec[i])
@@ -228,6 +237,16 @@ get_data <- function(prob_code,get_dual_diff){
                     is_in_interval_vec <- append(is_in_interval_vec,0)
                     }
 
+                }
+                }else{
+                for( i in distances){
+                    if(i < median(distances)){
+                        is_in_interval_vec <- append(is_in_interval_vec,1)
+                    }else{
+                        is_in_interval_vec <- append(is_in_interval_vec,0)
+                    }
+
+                }
                 }
 
                 is_in_interval_vec <- unlist(is_in_interval_vec)
@@ -254,13 +273,47 @@ get_data <- function(prob_code,get_dual_diff){
 
     }
 
+    # TODO: get other cols
+    dat_demo <- read.csv("data/demo_data.csv")
+    dat_demo <-  dat_demo %>% filter(probanden_code == prob_code)
+    print(head(dat_demo))
+    if(nrow(dat_demo) == 0){
+        demo_sex <- NA
+        demo_age <- NA
+        demo_rl <- NA
+        demo_drogen <- NA
+        demo_alkohol <- NA
+        demo_dyslex <- NA
+        demo_adhs <- NA
+    }
+    else{
+        demo_sex <- dat_demo$sex
+        demo_age <- dat_demo$age
+        demo_rl <- dat_demo$rechts_links
+        demo_drogen <- dat_demo$drogen
+        demo_alkohol <- dat_demo$alkohol
+        demo_dyslex <- dat_demo$Dyslexie
+        demo_adhs <- dat_demo$ADHS
+    }
+
+    demo_sex <- rep(demo_sex,length(rt_num))
+    demo_age <- rep(demo_age,length(rt_num))
+    demo_rl <- rep(demo_rl,length(rt_num))
+    demo_drogen <- rep(demo_drogen,length(rt_num))
+    demo_alkohol <- rep(demo_alkohol,length(rt_num))
+    demo_dyslex <- rep(demo_dyslex,length(rt_num))
+    demo_adhs <- rep(demo_adhs,length(rt_num))
+
     prob_code <- rep(prob_code,length(rt_num))
     rig_randomness_p <- rep(rig_randomness_p,length(rt_num))
     rig_randomness_runs <- rep(rig_randomness_runs,length(rt_num))
     rig_randomness_1s <- rep(rig_randomness_1s,length(rt_num))
     rig_randomness_0s <- rep(rig_randomness_0s,length(rt_num))
 
-    data <- data.frame(prob_code, rt_num, correct_num,numbers, ordered, ascending, descending, distance, datetime, rt_dual, correct_dual, mode,dual_stim,practice,rig_randomness_p,rig_randomness_runs,rig_randomness_1s,rig_randomness_0s)
+
+
+
+    data <- data.frame(prob_code, rt_num, correct_num,numbers, ordered, ascending, descending, distance, datetime, rt_dual, correct_dual, mode,dual_stim,practice,rig_randomness_p,rig_randomness_runs,rig_randomness_1s,rig_randomness_0s,demo_sex,demo_age,demo_rl,demo_drogen,demo_alkohol,demo_dyslex,demo_adhs)
     data["dual_diff"] <- get_dual_diff(data$dual_stim)
 
     if (length(client_info) != 0){

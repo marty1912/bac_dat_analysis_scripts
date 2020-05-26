@@ -1,4 +1,5 @@
 library(dplyr)
+library(tidyr)
 
 d <- read.csv("all_data.csv")
 
@@ -77,3 +78,18 @@ dat$accuracy <- dat$total_observations.TRUE / (dat$total_observations.TRUE+dat$t
 
 print(dat)
 write.csv(dat,file="data_accuracy_p_participant_dual.csv",row.names=FALSE,na="")
+
+dat_accuracy <- read.csv("data_accuracy.csv")
+dat_accuracy <- dat_accuracy %>% group_by(prob_code,mode) %>% mutate(accuracy = mean(accuracy))
+write.csv(dat_accuracy,file="data_accuracy_part_mode.csv",row.names=FALSE,na="")
+
+dat_accuracy <- data.frame(dat_accuracy)
+dat_accuracy <- dat_accuracy %>% select(prob_code,accuracy,mode,distance,ordered)
+dat_accuracy <- data.frame(dat_accuracy)
+dat_accuracy <- reshape(dat_accuracy, idvar=c("prob_code","ordered","distance"), timevar = c("mode"), direction="wide")
+dat_accuracy <- reshape(dat_accuracy, idvar=c("prob_code","distance"), timevar = c("ordered"), direction="wide")
+dat_accuracy <- reshape(dat_accuracy, idvar=c("prob_code"), timevar = c("distance"), direction="wide")
+
+write.csv(dat_accuracy,file="data_accuracy_anova.csv",row.names=FALSE,na="")
+
+

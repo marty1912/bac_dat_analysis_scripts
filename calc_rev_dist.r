@@ -1,4 +1,5 @@
 library(dplyr)
+library(tidyr)
 
 #dat <- read.csv("all_data.csv")
 dat <- read.csv("data_cleaned.csv")
@@ -12,6 +13,13 @@ print(dat)
 
 write.csv(dat,file="data_sum_by_part_mode.csv",row.names=FALSE,na="")
 
+dat_for_anova <- data.frame(dat)
+
+dat_for_anova <- reshape(dat_for_anova,idvar=c("prob_code","distance","mode"), timevar = c("ordered"),direction="wide")
+dat_for_anova <- reshape(dat_for_anova,idvar=c("prob_code","distance"), timevar = c("mode"),direction="wide")
+dat_for_anova <- reshape(dat_for_anova,idvar=c("prob_code"), timevar = c("distance"),direction="wide")
+
+write.csv(dat_for_anova,file="data_for_anova.csv",row.names=FALSE,na="")
 
 dat <- data.frame(dat)
 

@@ -1,38 +1,400 @@
+---
+title: "Analyse Gruppe 1"
+params:
+  hyp: rig
+output:
+  html_document: default
+  pdf_document: default
+---
 
-## test
+## start by looking at the data:
+ ```{r }
+ library(PairedData)
+ library(ggplot2)
+ library(ggpubr)
+ 
+ ```
 
  ```{r}
-
 dat <- read.csv("data_with_dist_effect_1rpP.csv")
+dat_all <-  read.csv("data_cleaned.csv")
+dat_accuracy <-  read.csv("data_accuracy_part_mode.csv")
 
-t.test.stuff <- function(x,y){
-t_test <- t.test(x,y,paired=TRUE,alternative="two.sided")
-(t_test)
-}
+```
 
-message("t-tests for distance effect")
+ ```{r }
+ggdensity(dat_all, x = "rt_num",
+   add = "mean", rug = TRUE,
+   color = "mode", fill = "mode",
+   palette = "jco")
+ 
+ ```
+ 
+ ```{r }
+ggdensity(dat_accuracy, x = "accuracy",
+   add = "mean", rug = TRUE,
+   color = "mode", fill = "mode",
+   palette = "jco")
+ 
+ ```
+ 
+  ```{r }
+ggboxplot(dat_all, x = "mode", y = "rt_num",
+                color = "mode", palette ="jco"
+                , shape = "mode")
+ 
+ ```
 
-t.test.single <- t.test.stuff(dat$mean_rt.1.FALSE.single,dat$mean_rt.2.FALSE.single)
-t.test.stuff(dat$mean_rt.1.FALSE.dual_phon,dat$mean_rt.2.FALSE.dual_phon)
-t.test.stuff(dat$mean_rt.1.FALSE.dual_vis,dat$mean_rt.2.FALSE.dual_vis)
-t.test.stuff(dat$mean_rt.1.FALSE.dual_rig,dat$mean_rt.2.FALSE.dual_rig)
+## distance effect:
+Bei ungeordneten Zahlenfolgen werden kleinere Abstände langsamer identifiziert.
+
+### single task
+ ```{r}
+x_labels_to_use <- c("1","2")
+ggpaired(dat, cond1 = "mean_rt.1.FALSE.single", cond2 = "mean_rt.2.FALSE.single",
+    fill = "condition"
+    , palette = "jco"
+    ,line.size=0.1
+    ,point.size=0.0
+    ,width=0.5
+    ,short.panel.labs=TRUE
+    ,xlab= "Distanz"
+    ,ylab= "Reaktionszeit in s"
+    ) + scale_x_discrete(labels=x_labels_to_use)
+    
+t.test(dat$mean_rt.1.FALSE.single,dat$mean_rt.2.FALSE.single,paired=TRUE,alternative="two.sided")
+```
+### dual phonological 
+ ```{r}
+x_labels_to_use <- c("1","2")
+ggpaired(dat, cond1 = "mean_rt.1.FALSE.dual_phon", cond2 = "mean_rt.2.FALSE.dual_phon",
+    fill = "condition"
+    , palette = "jco"
+    ,line.size=0.1
+    ,point.size=0.0
+    ,width=0.5
+    ,short.panel.labs=TRUE
+    ,xlab= "Distanz"
+    ,ylab= "Reaktionszeit in s"
+    ) + scale_x_discrete(labels=x_labels_to_use)
+ 
+t.test(dat$mean_rt.1.FALSE.dual_phon,dat$mean_rt.2.FALSE.dual_phon,paired=TRUE,alternative="two.sided")
+```
+### dual visual 
+ ```{r}
+x_labels_to_use <- c("1","2")
+ggpaired(dat, cond1 = "mean_rt.1.FALSE.dual_vis", cond2 = "mean_rt.2.FALSE.dual_vis",
+    fill = "condition"
+    , palette = "jco"
+    ,line.size=0.1
+    ,point.size=0.0
+    ,width=0.5
+    ,short.panel.labs=TRUE
+    ,xlab= "Distanz"
+    ,ylab= "Reaktionszeit in s"
+    ) + scale_x_discrete(labels=x_labels_to_use)
+ 
+t.test(dat$mean_rt.1.FALSE.dual_vis,dat$mean_rt.2.FALSE.dual_vis,paired=TRUE,alternative="two.sided")
+```
+### dual executive
+ ```{r}
+x_labels_to_use <- c("1","2")
+ggpaired(dat, cond1 = "mean_rt.1.FALSE.dual_rig", cond2 = "mean_rt.2.FALSE.dual_rig",
+    fill = "condition"
+    , palette = "jco"
+    ,line.size=0.1
+    ,point.size=0.0
+    ,width=0.5
+    ,short.panel.labs=TRUE
+    ,xlab= "Distanz"
+    ,ylab= "Reaktionszeit in s"
+    ) + scale_x_discrete(labels=x_labels_to_use)
+ 
+t.test(dat$mean_rt.1.FALSE.dual_rig,dat$mean_rt.2.FALSE.dual_rig,paired=TRUE,alternative="two.sided")
+```
 
 
-message("t-tests for rev distance effect")
-t.test.stuff(dat$mean_rt.1.TRUE.single,dat$mean_rt.2.TRUE.single)
-t.test.stuff(dat$mean_rt.1.TRUE.dual_phon,dat$mean_rt.2.TRUE.dual_phon)
-t.test.stuff(dat$mean_rt.1.TRUE.dual_vis,dat$mean_rt.2.TRUE.dual_vis)
-t.test.stuff(dat$mean_rt.1.TRUE.dual_rig,dat$mean_rt.2.TRUE.dual_rig)
 
-message("t-tests for rev distance effect group compare")
-t.test.stuff(dat$mean_rt.1.TRUE.single,dat$mean_rt.2.TRUE.single)
-t.test.stuff(dat$mean_rt.1.TRUE.dual_phon,dat$mean_rt.2.TRUE.dual_phon)
-t.test.stuff(dat$mean_rt.1.TRUE.dual_vis,dat$mean_rt.2.TRUE.dual_vis)
-t.test.stuff(dat$mean_rt.1.TRUE.dual_rig,dat$mean_rt.2.TRUE.dual_rig)
+## reverse distance effect:
+### single
+ ```{r}
+x_labels_to_use <- c("1","2")
+ggpaired(dat, cond1 = "mean_rt.1.TRUE.single", cond2 = "mean_rt.2.TRUE.single",
+    fill = "condition"
+    , palette = "jco"
+    ,line.size=0.1
+    ,point.size=0.0
+    ,width=0.5
+    ,panel.labs = list(cond1="1",cond2="2")
+    ,short.panel.labs=TRUE
+    ,xlab= "Distanz"
+    ,ylab= "Reaktionszeit in s"
+    ) + scale_x_discrete(labels=x_labels_to_use)
+ 
+t.test(dat$mean_rt.1.TRUE.single,dat$mean_rt.2.TRUE.single,paired=TRUE,alternative="two.sided")
+```
+### dual phonological 
+ ```{r}
+x_labels_to_use <- c("1","2")
+ggpaired(dat, cond1 = "mean_rt.1.TRUE.dual_phon", cond2 = "mean_rt.2.TRUE.dual_phon",
+    fill = "condition"
+    , palette = "jco"
+    ,line.size=0.1
+    ,point.size=0.0
+    ,width=0.5
+    ,panel.labs = list(cond1="1",cond2="2")
+    ,short.panel.labs=TRUE
+    ,xlab= "Distanz"
+    ,ylab= "Reaktionszeit in s"
+    ) + scale_x_discrete(labels=x_labels_to_use)
+ 
+t.test(dat$mean_rt.1.TRUE.dual_phon,dat$mean_rt.2.TRUE.dual_phon,paired=TRUE,alternative="two.sided")
+```
+### dual visual 
+ ```{r}
+x_labels_to_use <- c("1","2")
+ggpaired(dat, cond1 = "mean_rt.1.TRUE.dual_vis", cond2 = "mean_rt.2.TRUE.dual_vis",
+    fill = "condition"
+    , palette = "jco"
+    ,line.size=0.1
+    ,point.size=0.0
+    ,width=0.5
+    ,panel.labs = list(cond1="1",cond2="2")
+    ,short.panel.labs=TRUE
+    ,xlab= "Distanz"
+    ,ylab= "Reaktionszeit in s"
+    ) + scale_x_discrete(labels=x_labels_to_use)
+ 
+t.test(dat$mean_rt.1.TRUE.dual_vis,dat$mean_rt.2.TRUE.dual_vis,paired=TRUE,alternative="two.sided")
+```
+### dual executive
+ ```{r}
+x_labels_to_use <- c("1","2")
+ggpaired(dat, cond1 = "mean_rt.1.TRUE.dual_rig", cond2 = "mean_rt.2.TRUE.dual_rig",
+    fill = "condition"
+    , palette = "jco"
+    ,line.size=0.1
+    ,point.size=0.0
+    ,width=0.5
+    ,panel.labs = list(cond1="1",cond2="2")
+    ,short.panel.labs=TRUE
+    ,xlab= "Distanz"
+    ,ylab= "Reaktionszeit in s"
+    ) + scale_x_discrete(labels=x_labels_to_use)
+ 
+t.test(dat$mean_rt.1.TRUE.dual_rig,dat$mean_rt.2.TRUE.dual_rig,paired=TRUE,alternative="two.sided")
+```
+
+## comparison of reverse distance effects:
+### phon 
+ ```{r}
+x_labels_to_use <- c("single","dual phon")
+ggpaired(dat, cond1 = "rev_dist_effect_normed.TRUE.single", cond2 = "rev_dist_effect_normed.TRUE.dual_phon",
+    fill = "condition"
+    , palette = "jco"
+    ,line.size=0.1
+    ,point.size=0.0
+    ,width=0.5
+    ,panel.labs = list(cond1="1",cond2="2")
+    ,short.panel.labs=TRUE
+    ,xlab= "Bedingung"
+    ,ylab= "Reaktionszeit in s"
+    ) + scale_x_discrete(labels=x_labels_to_use)
+ 
+t.test(dat$rev_dist_effect_normed.TRUE.single,dat$rev_dist_effect_normed.TRUE.dual_phon,paired=TRUE,alternative="two.sided")
+```
+
+### vis 
+ ```{r}
+x_labels_to_use <- c("single","dual vis")
+ggpaired(dat, cond1 = "rev_dist_effect_normed.TRUE.single", cond2 = "rev_dist_effect_normed.TRUE.dual_vis",
+    fill = "condition"
+    , palette = "jco"
+    ,line.size=0.1
+    ,point.size=0.0
+    ,width=0.5
+    ,panel.labs = list(cond1="1",cond2="2")
+    ,short.panel.labs=TRUE
+    ,xlab= "Bedingung"
+    ,ylab= "Reaktionszeit in s"
+    ) + scale_x_discrete(labels=x_labels_to_use)
+ 
+t.test(dat$rev_dist_effect_normed.TRUE.single,dat$rev_dist_effect_normed.TRUE.dual_vis,paired=TRUE,alternative="two.sided")
+```
+### rig 
+ ```{r}
+x_labels_to_use <- c("single","dual rig")
+ggpaired(dat, cond1 = "rev_dist_effect_normed.TRUE.single", cond2 = "rev_dist_effect_normed.TRUE.dual_rig",
+    fill = "condition"
+    , palette = "jco"
+    ,line.size=0.1
+    ,point.size=0.0
+    ,width=0.5
+    ,panel.labs = list(cond1="1",cond2="2")
+    ,short.panel.labs=TRUE
+    ,xlab= "Bedingung"
+    ,ylab= "Reaktionszeit in s"
+    ) + scale_x_discrete(labels=x_labels_to_use)
+ 
+t.test(dat$rev_dist_effect_normed.TRUE.single,dat$rev_dist_effect_normed.TRUE.dual_rig,paired=TRUE,alternative="two.sided")
+```
+
+
+
+## comparison of distance effects:
+### phon 
+ ```{r}
+x_labels_to_use <- c("single","dual phon")
+ggpaired(dat, cond1 = "dist_effect.FALSE.single", cond2 = "dist_effect.FALSE.dual_phon",
+    fill = "condition"
+    , palette = "jco"
+    ,line.size=0.1
+    ,point.size=0.0
+    ,width=0.5
+    ,panel.labs = list(cond1="1",cond2="2")
+    ,short.panel.labs=TRUE
+    ,xlab= "Bedingung"
+    ,ylab= "Reaktionszeit in s"
+    ) + scale_x_discrete(labels=x_labels_to_use)
+ 
+t.test(dat$dist_effect.FALSE.single,dat$dist_effect.FALSE.dual_phon,paired=TRUE,alternative="two.sided")
+```
+
+### vis 
+ ```{r}
+x_labels_to_use <- c("single","dual vis")
+ggpaired(dat, cond1 = "dist_effect.FALSE.single", cond2 = "dist_effect.FALSE.dual_vis",
+    fill = "condition"
+    , palette = "jco"
+    ,line.size=0.1
+    ,point.size=0.0
+    ,width=0.5
+    ,panel.labs = list(cond1="1",cond2="2")
+    ,short.panel.labs=TRUE
+    ,xlab= "Bedingung"
+    ,ylab= "Reaktionszeit in s"
+    ) + scale_x_discrete(labels=x_labels_to_use)
+ 
+t.test(dat$dist_effect.FALSE.single,dat$dist_effect.FALSE.dual_vis,paired=TRUE,alternative="two.sided")
+```
+### rig 
+ ```{r}
+x_labels_to_use <- c("single","dual rig")
+ggpaired(dat, cond1 = "dist_effect.FALSE.single", cond2 = "dist_effect.FALSE.dual_rig",
+    fill = "condition"
+    , palette = "jco"
+    ,line.size=0.1
+    ,point.size=0.0
+    ,width=0.5
+    ,panel.labs = list(cond1="1",cond2="2")
+    ,short.panel.labs=TRUE
+    ,xlab= "Bedingung"
+    ,ylab= "Reaktionszeit in s"
+    ) + scale_x_discrete(labels=x_labels_to_use)
+ 
+t.test(dat$dist_effect.FALSE.single,dat$dist_effect.FALSE.dual_rig,paired=TRUE,alternative="two.sided")
+```
+
+
+
+
+
+
+ ```{r echo=FALSE}
 
 #### Rscript -e 'library(rmarkdown); rmarkdown::render("analysis.Rmd", "pdf_document",params = list(filename = "analysis.pdf"))'
 
 ```
 
+ ```{r }
 
-`r t.test.single` 
+#dat <- read.csv("data_cleaned.csv")
+#dat$prob_code <- factor(dat$prob_code)
+
+#anova <- aov(rt_num ~ mode*distance*ordered #+Error(prob_code/(mode*distance*ordered)), data=dat)
+
+#(anova)
+
+#summary(anova)
+```
+
+ ```{r }
+library(ez)
+library(dplyr)
+
+dat <- read.csv("data_cleaned.csv")
+
+# TODO: remove participants completely.
+
+dat <- dat %>% filter(!is.na(rt_num))
+data_excluded <- read.csv("excluded_participants_p_mode.csv")
+print(nrow(dat))
+dat$distance <- as.factor(dat$distance)
+
+
+#dat_incomplete <- dat %>% group_by(prob_code,distance,ordered,mode) %>% summarize(n = n(),na.rm=FALSE) %>% filter((!is.na(n)) &(n != 0)) 
+
+#(dat_incomplete)
+#dat <- dat %>% filter((prob_code %in% dat_incomplete$prob_code ))
+  
+
+
+#if(FALSE){
+dat_true <- dat %>% filter((ordered == TRUE))
+dat_false <- dat %>% filter((ordered == FALSE))
+
+dat_true_1 <- dat_true %>% filter((distance == 1))
+dat_false_1 <- dat_false %>% filter((distance == 1))
+dat_true_2 <- dat_true %>% filter((distance == 2))
+dat_false_2 <- dat_false %>% filter((distance == 2))
+
+
+dat_true_1_single <- dat_true_1 %>% filter((mode == "single"))
+dat_false_1_single <- dat_false_1 %>% filter((mode == "single"))
+dat_true_2_single <- dat_true_2 %>% filter((mode == "single"))
+dat_false_2_single <- dat_false_2 %>% filter((mode == "single"))
+
+dat_true_1_dual_rig <- dat_true_1 %>% filter((mode == "dual_rig"))
+dat_false_1_dual_rig <- dat_false_1 %>% filter((mode == "dual_rig"))
+dat_true_2_dual_rig <- dat_true_2 %>% filter((mode == "dual_rig"))
+dat_false_2_dual_rig <- dat_false_2 %>% filter((mode == "dual_rig"))
+
+dat_true_1_dual_phon <- dat_true_1 %>% filter((mode == "dual_phon"))
+dat_false_1_dual_phon <- dat_false_1 %>% filter((mode == "dual_phon"))
+dat_true_2_dual_phon <- dat_true_2 %>% filter((mode == "dual_phon"))
+dat_false_2_dual_phon <- dat_false_2 %>% filter((mode == "dual_phon"))
+
+dat_true_1_dual_vis <- dat_true_1 %>% filter((mode == "dual_vis"))
+dat_false_1_dual_vis <- dat_false_1 %>% filter((mode == "dual_vis"))
+dat_true_2_dual_vis <- dat_true_2 %>% filter((mode == "dual_vis"))
+dat_false_2_dual_vis <- dat_false_2 %>% filter((mode == "dual_vis"))
+
+dat <- dat %>% filter((prob_code %in% dat_true_1_single$prob_code ))
+dat <- dat %>% filter((prob_code %in% dat_false_1_single$prob_code ))
+dat <- dat %>% filter((prob_code %in% dat_true_2_single$prob_code ))
+dat <- dat %>% filter((prob_code %in% dat_false_2_single$prob_code ))
+
+dat <- dat %>% filter((prob_code %in% dat_true_1_dual_rig$prob_code ))
+dat <- dat %>% filter((prob_code %in% dat_false_1_dual_rig$prob_code ))
+dat <- dat %>% filter((prob_code %in% dat_true_2_dual_rig$prob_code ))
+dat <- dat %>% filter((prob_code %in% dat_false_2_dual_rig$prob_code ))
+
+dat <- dat %>% filter((prob_code %in% dat_true_1_dual_phon$prob_code ))
+dat <- dat %>% filter((prob_code %in% dat_false_1_dual_phon$prob_code ))
+dat <- dat %>% filter((prob_code %in% dat_true_2_dual_phon$prob_code ))
+dat <- dat %>% filter((prob_code %in% dat_false_2_dual_phon$prob_code ))
+
+dat <- dat %>% filter((prob_code %in% dat_true_1_dual_vis$prob_code ))
+dat <- dat %>% filter((prob_code %in% dat_false_1_dual_vis$prob_code ))
+dat <- dat %>% filter((prob_code %in% dat_true_2_dual_vis$prob_code ))
+dat <- dat %>% filter((prob_code %in% dat_false_2_dual_vis$prob_code ))
+#}
+
+
+
+print(nrow(dat))
+
+ez_aov <- ezANOVA(data=dat,dv=rt_num,wid=prob_code,within=.(distance,ordered,mode))
+ez_aov
+```
+
