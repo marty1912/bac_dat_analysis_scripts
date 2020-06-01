@@ -17,6 +17,7 @@ library(papaja)
 library(knitr)
 library(tidyverse)
 library(rstatix)
+library(ez)
  
  ```
 
@@ -146,12 +147,12 @@ return(list(
 
 
 
-## distance effect:
+# distance effect:
 
 Bei ungeordneten Zahlenfolgen werden kleinere Abstände langsamer identifiziert.
 
 
-### single task
+## single task
 
 
  ```{r results='markup'}
@@ -165,7 +166,7 @@ cols=c("mean_rt.1.FALSE.single",  "mean_rt.2.FALSE.single"))
 
 ```
 
-### dual phonological 
+## dual phonological 
 
  ```{r}
 
@@ -177,7 +178,7 @@ cols=c("mean_rt.1.FALSE.dual_phon",  "mean_rt.2.FALSE.dual_phon"))
 
 ```
 
-### dual visual 
+## dual visual 
 
  ```{r}
 
@@ -188,7 +189,7 @@ cols=c("mean_rt.1.FALSE.dual_vis",  "mean_rt.2.FALSE.dual_vis"))
 
 ```
 
-### dual executive
+## dual executive
 
  ```{r}
 
@@ -201,9 +202,9 @@ cols=c("mean_rt.1.FALSE.dual_rig",  "mean_rt.2.FALSE.dual_rig"))
 
 
 
-## reverse distance effect:
+# reverse distance effect:
 
-### single
+## single
 
  ```{r}
 
@@ -214,7 +215,7 @@ cols=c("mean_rt.1.TRUE.single",  "mean_rt.2.TRUE.single"))
 
 ```
 
-### dual phonological 
+## dual phonological 
 
  ```{r}
 t_test_and_plot(dat,
@@ -224,7 +225,7 @@ cols=c("mean_rt.1.TRUE.dual_phon",  "mean_rt.2.TRUE.dual_phon"))
 
 ```
 
-### dual visual 
+## dual visual 
 
  ```{r}
 
@@ -235,7 +236,7 @@ cols=c("mean_rt.1.TRUE.dual_vis",  "mean_rt.2.TRUE.dual_vis"))
 
 ```
 
-### dual executive
+## dual executive
 
  ```{r}
 t_test_and_plot(dat,
@@ -244,57 +245,67 @@ x_labels_to_use = c("1","2"),
 cols=c("mean_rt.1.TRUE.dual_rig",  "mean_rt.2.TRUE.dual_rig"))
 ```
 
-## comparison of reverse distance effects:
+# comparison of reverse distance effects:
 
-### phon 
+## phon 
 
  ```{r}
 t_test_and_plot(dat,
 x_labels_to_use = c("single","dual phon"),
-    x_lab= "Bedingung", y_lab= "Reaktionszeit in s",
+    x_lab= "Bedingung", y_lab= "reverse distance effect",
 cols=c("rev_dist_effect_normed.TRUE.single",  "rev_dist_effect_normed.TRUE.dual_phon"))
 ```
 
-### vis 
+## vis 
 
  ```{r}
 t_test_and_plot(dat,
 x_labels_to_use = c("single","dual vis"),
-    x_lab= "Bedingung", y_lab= "Reaktionszeit in s",
+    x_lab= "Bedingung", y_lab= "reverse distance effect",
 cols=c("rev_dist_effect_normed.TRUE.single",  "rev_dist_effect_normed.TRUE.dual_vis"))
 ```
 
-### rig 
+## dual executive
 
  ```{r}
 t_test_and_plot(dat,
 x_labels_to_use = c("single","dual rig"),
-    x_lab= "Bedingung", y_lab= "Reaktionszeit in s",
+    x_lab= "Bedingung", y_lab= "reverse distance effect",
 cols=c("rev_dist_effect_normed.TRUE.single",  "rev_dist_effect_normed.TRUE.dual_rig"))
 
 ```
 
 
 
-## comparison of distance effects:
+# comparison of distance effects:
 
-### phon 
+
+## phon 
 
  ```{r}
 t_test_and_plot(dat,
 x_labels_to_use = c("single","dual phon"),
-    x_lab= "Bedingung", y_lab= "Reaktionszeit in s",
-cols=c("dist_effect.FALSE.single",  "dist_effect.FALSE.dual_phon"))
+    x_lab= "Bedingung", y_lab= "distance effect",
+cols=c("dist_effect_normed.FALSE.single",  "dist_effect_normed.FALSE.dual_phon"))
 ```
 
-### rig 
+## vis
+
+ ```{r}
+t_test_and_plot(dat,
+x_labels_to_use = c("single","dual vis"),
+    x_lab= "Bedingung", y_lab= "distance effect",
+cols=c("dist_effect_normed.FALSE.single",  "dist_effect_normed.FALSE.dual_vis"))
+```
+
+## dual executive
 
  ```{r}
 
 t_test_and_plot(dat,
 x_labels_to_use = c("single","dual rig"),
-    x_lab= "Bedingung", y_lab= "Reaktionszeit in s",
-cols=c("dist_effect.FALSE.single",  "dist_effect.FALSE.dual_rig"))
+    x_lab= "Bedingung", y_lab= "distance effect",
+cols=c("dist_effect_normed.FALSE.single",  "dist_effect_normed.FALSE.dual_rig"))
 
 ```
 
@@ -310,20 +321,6 @@ cols=c("dist_effect.FALSE.single",  "dist_effect.FALSE.dual_rig"))
 ```
 
  ```{r results='markup'}
-
-#dat <- read.csv("data_cleaned.csv")
-#dat$prob_code <- factor(dat$prob_code)
-
-#anova <- aov(rt_num ~ mode*distance*ordered #+Error(prob_code/(mode*distance*ordered)), data=dat)
-
-#(anova)
-
-#summary(anova)
-```
-
- ```{r }
-library(ez)
-library(dplyr)
 
 dat <- read.csv("data_cleaned.csv")
 
