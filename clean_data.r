@@ -147,27 +147,33 @@ dat <- filter_out_prob_codes_per_mode(dat,dat_exclude)
 ########################################################################################################### 
 
 if(TRUE){
-mean_rt_num = mean(dat$rt_num,na.rm=TRUE)
-mean_rt_dual_phon = mean(dat$rt_dual[(dat$mode == "dual_phon")] ,na.rm=TRUE)
-mean_rt_dual_vis = mean(dat$rt_dual[(dat$mode == "dual_vis")],na.rm=TRUE)
+    # exclude rts which are more than 3 sds from the mean
 
-sd_rt_num = sd(dat$rt_num,na.rm=TRUE)
-sd_rt_dual_phon = sd(dat$rt_dual[(dat$mode == "dual_phon") ],na.rm=TRUE)
-sd_rt_dual_vis = sd(dat$rt_dual[(dat$mode == "dual_vis") ],na.rm=TRUE)
+    mean_rt_num = mean(dat$rt_num,na.rm=TRUE)
+    mean_rt_dual_phon = mean(dat$rt_dual[(dat$mode == "dual_phon")] ,na.rm=TRUE)
+    mean_rt_dual_vis = mean(dat$rt_dual[(dat$mode == "dual_vis")],na.rm=TRUE)
+
+    sd_rt_num = sd(dat$rt_num,na.rm=TRUE)
+    sd_rt_dual_phon = sd(dat$rt_dual[(dat$mode == "dual_phon") ],na.rm=TRUE)
+    sd_rt_dual_vis = sd(dat$rt_dual[(dat$mode == "dual_vis") ],na.rm=TRUE)
 
 
-# exclude trials with rt more than 3 sds from the mean. 
-dat <- dat %>% filter(!is.na(rt_num) &  ((rt_num > mean_rt_num -3*sd_rt_num) & (rt_num < mean_rt_num +3*sd_rt_num)))  %>% 
-    filter((mode != "dual_phon")|(!is.na(rt_dual) &  ((rt_dual> mean_rt_dual_phon -3*sd_rt_dual_phon) & (rt_dual< mean_rt_dual_phon +3*sd_rt_dual_phon)))) %>%
-    filter((mode != "dual_vis")|(!is.na(rt_dual) &  ((rt_dual> mean_rt_dual_vis -3*sd_rt_dual_vis) & (rt_dual< mean_rt_dual_vis +3*sd_rt_dual_vis))))
+    # exclude trials with rt more than 3 sds from the mean. 
+    dat <- dat %>% filter(!is.na(rt_num) &  ((rt_num > mean_rt_num -3*sd_rt_num) & (rt_num < mean_rt_num +3*sd_rt_num)))  %>% 
+        filter((mode != "dual_phon")|(!is.na(rt_dual) 
+                                      &  ((rt_dual> mean_rt_dual_phon -3*sd_rt_dual_phon) 
+                                          & (rt_dual< mean_rt_dual_phon +3*sd_rt_dual_phon)))) %>%
+        filter((mode != "dual_vis")|(!is.na(rt_dual) 
+                                     &  ((rt_dual> mean_rt_dual_vis -3*sd_rt_dual_vis) 
+                                         & (rt_dual< mean_rt_dual_vis +3*sd_rt_dual_vis))))
 
 }else{
     # alternativet method of finding outliers.
     # using rstatix package.
-# remove outliers with boxplot method and IQR (interquartile range)
-dat <- dat %>% filter((!is_outlier(rt_num)) 
-                      & (!(mode == "dual_phon") | !(is_outlier(rt_dual))) 
-                      & (!(mode == "dual_vis") | !(is_outlier(rt_dual))))
+    # remove outliers with boxplot method and IQR (interquartile range)
+    dat <- dat %>% filter((!is_outlier(rt_num)) 
+                          & (!(mode == "dual_phon") | !(is_outlier(rt_dual))) 
+                          & (!(mode == "dual_vis") | !(is_outlier(rt_dual))))
 }
 
 
