@@ -25,6 +25,7 @@ dat$accuracy <- dat$total_observations.TRUE / (dat$total_observations.TRUE+dat$t
 
 print(dat)
 write.csv(dat,file="data_accuracy.csv",row.names=FALSE,na="")
+d_for_anova <- dat
 
 
 ############################################################################################################
@@ -79,11 +80,12 @@ dat$accuracy <- dat$total_observations.TRUE / (dat$total_observations.TRUE+dat$t
 print(dat)
 write.csv(dat,file="data_accuracy_p_participant_dual.csv",row.names=FALSE,na="")
 
+
 dat_accuracy <- read.csv("data_accuracy.csv")
 dat_accuracy <- dat_accuracy %>% group_by(prob_code,mode) %>% mutate(accuracy = mean(accuracy))
 write.csv(dat_accuracy,file="data_accuracy_part_mode.csv",row.names=FALSE,na="")
 
-dat_accuracy <- data.frame(dat_accuracy)
+dat_accuracy <- data.frame(d_for_anova)
 dat_accuracy <- dat_accuracy %>% select(prob_code,accuracy,mode,distance,ordered)
 dat_accuracy <- data.frame(dat_accuracy)
 dat_accuracy <- reshape(dat_accuracy, idvar=c("prob_code","ordered","distance"), timevar = c("mode"), direction="wide")
