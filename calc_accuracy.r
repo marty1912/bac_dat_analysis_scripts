@@ -82,8 +82,8 @@ write.csv(dat,file="data_accuracy_p_participant_dual.csv",row.names=FALSE,na="")
 
 
 dat_accuracy <- read.csv("data_accuracy.csv")
-dat_accuracy <- dat_accuracy %>% group_by(prob_code,mode) %>% mutate(accuracy = mean(accuracy))
-write.csv(dat_accuracy,file="data_accuracy_part_mode.csv",row.names=FALSE,na="")
+dat_accuracy_mode <- dat_accuracy %>% group_by(prob_code,mode) %>% summarise(accuracy = mean(accuracy))
+write.csv(dat_accuracy_mode,file="data_accuracy_part_mode.csv",row.names=FALSE,na="")
 
 dat_accuracy <- data.frame(d_for_anova)
 dat_accuracy <- dat_accuracy %>% select(prob_code,accuracy,mode,distance,ordered)

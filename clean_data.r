@@ -6,6 +6,26 @@ dat <- read.csv("all_data.csv")
 
 
 ########################################################################################################### 
+# get some info about our data here..
+########################################################################################################### 
+
+print("demo data")
+dat_part_info <- dat %>% select(prob_code,demo_age,demo_sex)
+# get one row per participant.
+dat_part_info <- dat_part_info %>% distinct(prob_code,.keep_all=TRUE)
+print(dat_part_info)
+
+print("mean age:")
+mean(dat_part_info$demo_age,na.rm=TRUE) %>% print()
+print("sd age:")
+sd(dat_part_info$demo_age,na.rm=TRUE) %>% print()
+
+print("sex:")
+dat_part_info %>% count(demo_sex)
+
+
+
+########################################################################################################### 
 # demographic data
 ########################################################################################################### 
 
@@ -180,7 +200,7 @@ if(TRUE){
 ########################################################################################################### 
 # exclude trials with rig randomness sig or NA
 ########################################################################################################### 
-dat <- dat %>% filter(( mode != "dual_rig") | (!is.na(rig_randomness_p) ))# &  (rig_randomness_p >= 0.05 )))
+dat <- dat %>% filter(( mode != "dual_rig") | (!is.na(rig_randomness_p) ))# &  (rig_randomness_p >= 0.05 )
 
 
 

@@ -322,6 +322,11 @@ get_data <- function(prob_code,get_dual_diff){
         data["screen_width"] <-rep( client_info$screen_width_t_ratio[1],nrow(data))
     }
 
+    #library(lubridate)
+    #data$datetime <- parse_date_time(data$datetime,format='%d.%m.%Y, %H:%M:%S')
+    #data <- data[order(data$datetime),]
+    #data$trial_number <- c(1:nrow(data))
+
     return(data)
 }
 
