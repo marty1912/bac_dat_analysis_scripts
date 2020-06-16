@@ -90,7 +90,7 @@ dat <- dat %>% mutate(diff = get(cols[1])-get(cols[2]))
 outliers <- dat %>% identify_outliers(diff)
 
 # remove the outliers:
-dat <- dat %>% filter(!(prob_code %in% outliers$prob_code))
+#dat <- dat %>% filter(!(prob_code %in% outliers$prob_code))
 
 # perform shapiro test:
 shapiro <- dat %>% shapiro_test(diff)
@@ -174,10 +174,10 @@ return(list(
 
  ```
 
-
 # distance effect:
 
 Bei ungeordneten Zahlenfolgen werden kleinere Abstände langsamer identifiziert.
+
 
 ## single task
 
@@ -189,7 +189,7 @@ res <- t_test_and_plot(dat,
 x_labels_to_use = c("1","2"),
     x_lab= "Distanz",
     y_lab= "Reaktionszeit in s", 
-cols=c("ies.1.FALSE.single",  "ies.2.FALSE.single"))
+cols=c("mean_rt.1.FALSE.single",  "mean_rt.2.FALSE.single"))
 res
 
 ```
@@ -202,7 +202,7 @@ t_test_and_plot(dat,
 x_labels_to_use = c("1","2"),
     x_lab= "Distanz",
     y_lab= "Reaktionszeit in s", 
-cols=c("ies.1.FALSE.dual_phon",  "ies.2.FALSE.dual_phon"))
+cols=c("mean_rt.1.FALSE.dual_phon",  "mean_rt.2.FALSE.dual_phon"))
 
 ```
 
@@ -213,7 +213,7 @@ cols=c("ies.1.FALSE.dual_phon",  "ies.2.FALSE.dual_phon"))
 t_test_and_plot(dat,
 x_labels_to_use = c("1","2"),
     x_lab= "Distanz", y_lab= "Reaktionszeit in s",
-cols=c("ies.1.FALSE.dual_vis",  "ies.2.FALSE.dual_vis"))
+cols=c("mean_rt.1.FALSE.dual_vis",  "mean_rt.2.FALSE.dual_vis"))
 
 ```
 
@@ -224,7 +224,7 @@ cols=c("ies.1.FALSE.dual_vis",  "ies.2.FALSE.dual_vis"))
 t_test_and_plot(dat,
 x_labels_to_use = c("1","2"),
     x_lab= "Distanz", y_lab= "Reaktionszeit in s",
-cols=c("ies.1.FALSE.dual_rig",  "ies.2.FALSE.dual_rig"))
+cols=c("mean_rt.1.FALSE.dual_rig",  "mean_rt.2.FALSE.dual_rig"))
 
 ```
 
@@ -239,7 +239,7 @@ cols=c("ies.1.FALSE.dual_rig",  "ies.2.FALSE.dual_rig"))
 t_test_and_plot(dat,
 x_labels_to_use = c("1","2"),
     x_lab= "Distanz", y_lab= "Reaktionszeit in s",
-cols=c("ies.1.TRUE.single",  "ies.2.TRUE.single"))
+cols=c("mean_rt.1.TRUE.single",  "mean_rt.2.TRUE.single"))
 
 ```
 
@@ -249,7 +249,7 @@ cols=c("ies.1.TRUE.single",  "ies.2.TRUE.single"))
 t_test_and_plot(dat,
 x_labels_to_use = c("1","2"),
     x_lab= "Distanz", y_lab= "Reaktionszeit in s",
-cols=c("ies.1.TRUE.dual_phon",  "ies.2.TRUE.dual_phon"))
+cols=c("mean_rt.1.TRUE.dual_phon",  "mean_rt.2.TRUE.dual_phon"))
 
 ```
 
@@ -260,7 +260,7 @@ cols=c("ies.1.TRUE.dual_phon",  "ies.2.TRUE.dual_phon"))
 t_test_and_plot(dat,
 x_labels_to_use = c("1","2"),
     x_lab= "Distanz", y_lab= "Reaktionszeit in s",
-cols=c("ies.1.TRUE.dual_vis",  "ies.2.TRUE.dual_vis"))
+cols=c("mean_rt.1.TRUE.dual_vis",  "mean_rt.2.TRUE.dual_vis"))
 
 ```
 
@@ -270,7 +270,7 @@ cols=c("ies.1.TRUE.dual_vis",  "ies.2.TRUE.dual_vis"))
 t_test_and_plot(dat,
 x_labels_to_use = c("1","2"),
     x_lab= "Distanz", y_lab= "Reaktionszeit in s",
-cols=c("ies.1.TRUE.dual_rig",  "ies.2.TRUE.dual_rig"))
+cols=c("mean_rt.1.TRUE.dual_rig",  "mean_rt.2.TRUE.dual_rig"))
 ```
 
 
@@ -284,7 +284,7 @@ cols=c("ies.1.TRUE.dual_rig",  "ies.2.TRUE.dual_rig"))
 t_test_and_plot(dat,
 x_labels_to_use = c("single","dual phon"),
     x_lab= "Bedingung", y_lab= "distance effect",
-cols=c("dist_effect_ies_normed.FALSE.single",  "dist_effect_ies_normed.FALSE.dual_phon"))
+cols=c("dist_effect_normed.FALSE.single",  "dist_effect_normed.FALSE.dual_phon"))
 ```
 
 ## single vs. vis
@@ -293,7 +293,7 @@ cols=c("dist_effect_ies_normed.FALSE.single",  "dist_effect_ies_normed.FALSE.dua
 t_test_and_plot(dat,
 x_labels_to_use = c("single","dual vis"),
     x_lab= "Bedingung", y_lab= "distance effect",
-cols=c("dist_effect_ies_normed.FALSE.single",  "dist_effect_ies_normed.FALSE.dual_vis"))
+cols=c("dist_effect_normed.FALSE.single",  "dist_effect_normed.FALSE.dual_vis"))
 ```
 
 ## single vs. dual executive
@@ -303,7 +303,7 @@ cols=c("dist_effect_ies_normed.FALSE.single",  "dist_effect_ies_normed.FALSE.dua
 t_test_and_plot(dat,
 x_labels_to_use = c("single","dual rig"),
     x_lab= "Bedingung", y_lab= "distance effect",
-cols=c("dist_effect_ies_normed.FALSE.single",  "dist_effect_ies_normed.FALSE.dual_rig"))
+cols=c("dist_effect_normed.FALSE.single",  "dist_effect_normed.FALSE.dual_rig"))
 
 ```
 
@@ -315,7 +315,7 @@ cols=c("dist_effect_ies_normed.FALSE.single",  "dist_effect_ies_normed.FALSE.dua
 t_test_and_plot(dat,
 x_labels_to_use = c("single","dual phon"),
     x_lab= "Bedingung", y_lab= "reverse distance effect",
-cols=c("rev_dist_effect_ies_normed.TRUE.single",  "rev_dist_effect_ies_normed.TRUE.dual_phon"))
+cols=c("rev_dist_effect_normed.TRUE.single",  "rev_dist_effect_normed.TRUE.dual_phon"))
 ```
 
 ## single vs. vis 
@@ -324,7 +324,7 @@ cols=c("rev_dist_effect_ies_normed.TRUE.single",  "rev_dist_effect_ies_normed.TR
 t_test_and_plot(dat,
 x_labels_to_use = c("single","dual vis"),
     x_lab= "Bedingung", y_lab= "reverse distance effect",
-cols=c("rev_dist_effect_ies_normed.TRUE.single",  "rev_dist_effect_ies_normed.TRUE.dual_vis"))
+cols=c("rev_dist_effect_normed.TRUE.single",  "rev_dist_effect_normed.TRUE.dual_vis"))
 ```
 
 ## single vs. dual executive
@@ -333,7 +333,7 @@ cols=c("rev_dist_effect_ies_normed.TRUE.single",  "rev_dist_effect_ies_normed.TR
 t_test_and_plot(dat,
 x_labels_to_use = c("single","dual rig"),
     x_lab= "Bedingung", y_lab= "reverse distance effect",
-cols=c("rev_dist_effect_ies_normed.TRUE.single",  "rev_dist_effect_ies_normed.TRUE.dual_rig"))
+cols=c("rev_dist_effect_normed.TRUE.single",  "rev_dist_effect_normed.TRUE.dual_rig"))
 
 ```
 

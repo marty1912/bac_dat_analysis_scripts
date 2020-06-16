@@ -1,5 +1,6 @@
 library(dplyr)
 library(snpar)
+library(lubridate)
 
 get_dual_diff <- function(vec){
 
@@ -288,7 +289,7 @@ get_data <- function(prob_code,get_dual_diff){
     }
     else{
         demo_sex <- dat_demo$sex
-        demo_age <- dat_demo$age
+        demo_age <- dat_demo$age 
         demo_rl <- dat_demo$rechts_links
         demo_drogen <- dat_demo$drogen
         demo_alkohol <- dat_demo$alkohol
@@ -322,10 +323,12 @@ get_data <- function(prob_code,get_dual_diff){
         data["screen_width"] <-rep( client_info$screen_width_t_ratio[1],nrow(data))
     }
 
-    #library(lubridate)
-    #data$datetime <- parse_date_time(data$datetime,format='%d.%m.%Y, %H:%M:%S')
-    #data <- data[order(data$datetime),]
-    #data$trial_number <- c(1:nrow(data))
+    if(nrow(data) != 0){
+        data$datetime <- parse_date_time(data$datetime,'d.m.Y, H:M:S')
+        data <- data %>% arrange(datetime)
+        trial_number <- c(1:nrow(data))
+        data <- cbind(data,data.frame(trial_number))
+    }
 
     return(data)
 }
