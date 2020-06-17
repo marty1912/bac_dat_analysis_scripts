@@ -30,6 +30,8 @@ library(psych)
 
 
  ```{r}
+options(width=110) # so we can use the full page 
+
 dat <- read.csv("data_with_dist_effect_1rpP.csv")
 dat_all <-  read.csv("data_cleaned_complete.csv")
 dat_accuracy <-  read.csv("data_accuracy.csv") %>% filter(prob_code %in% dat$prob_code)
@@ -45,27 +47,77 @@ dat_accuracy$mode<- factor(dat_accuracy$mode,levels=c("single","dual_phon","dual
 
 ```
 
- ```{r}
+# get descirptives for our participants.
+
+ ```{r }
 
 paste("total participants:",nrow(dat))
-options(width=110)
-summary(dat_all)
+ summary(dat_all)
+ dat_all %>% group_by(prob_code) %>% summarise(demo_sex = demo_sex[1]) %>% count(demo_sex)
+dat_age <- dat_all %>% group_by(prob_code) %>% summarise(demo_age = demo_age[1]) 
+ mean(dat_age$demo_age)
+ sd(dat_age$demo_age)
+     
+dat_all %>% group_by(prob_code) %>% summarise(os = os[1])  %>% count(os)
+dat_demo %>% count(Student)
+dat_demo %>% count(Studienrichtung)
+dat_demo %>% count(Bildungsabschluss)
+summary(dat_demo$Mathematiknote)
+sd(dat_demo$Mathematiknote)
+
+ ```
+
+# density graph for reaction times
+
+ ```{r }
+dat_all %>% mutate(rt_num = rt_num*1000) %>% ggdensity( x = "rt_num",
+   add = "mean", rug = TRUE,
+   color = "mode", fill = "mode",
+   palette = "jco")
+dat_all %>% group_by(mode) %>% summarise(mean_rt = mean(rt_num*1000)) %>% select(mode,mean_rt)
+ 
+ ```
+ 
+# density graph for accuracy
+ 
+ ```{r }
+ dat_plot <- dat_accuracy %>% group_by(prob_code,mode) %>% summarise(accuracy = mean(accuracy))
+ggdensity(dat_plot, x = "accuracy",
+   add = "mean", rug = TRUE,
+   color = "mode", fill = "mode",
+   palette = "jco")
+
+dat_plot %>% group_by(mode) %>% summarise(mean_acc = mean(accuracy))
+ 
+ ```
+
+# density graph for accuracy (dual task)
+
+  ```{r }
+ggdensity(dat_accuracy_dual, x = "accuracy",
+   add = "mean", rug = TRUE,
+   color = "mode", fill = "mode",
+   palette = "jco")
+
+dat_accuracy_dual %>% group_by(mode) %>% summarise(mean_acc = mean(accuracy),sd= sd(accuracy))
+ 
+ ```
+
+# check the dual task difficulty:
+
+ ```{r}
 
 
 dat_dual_diff <- dat_all %>% filter(mode=="dual_vis")
 dat_dual_diff <- dat_dual_diff %>% group_by(prob_code) %>% summarise(dual_diff = (dual_diff[1]))
 summary(dat_dual_diff$dual_diff)
 range(dat_dual_diff$dual_diff,na.rm=TRUE)
-# get the mode:
+# get the mode: (modalwert)
 names(sort(-table(dat_dual_diff$dual_diff)))[1]
 
 dat_dual_diff  %>% gghistogram( x = "dual_diff",
    add = "mean", rug = TRUE,
    palette = "jco") %>% ggpar(xticks.by=1,xlab="difficulty",xlim=c(3,11))
-
-
-
-hist(dat_dual_diff$dual_diff)
 
 
 sd(dat_dual_diff$dual_diff)
@@ -78,19 +130,10 @@ dat_dual_diff  %>% gghistogram( x = "dual_diff",
    add = "mean", rug = TRUE,
    palette = "jco") %>% ggpar(xticks.by=1,xlab="difficulty",xlim=c(3,11))
 
-hist(dat_dual_diff$dual_diff)
 
 ```
 
- ```{r }
-dat_all %>% mutate(rt_num = rt_num*1000) %>% ggdensity( x = "rt_num",
-   add = "mean", rug = TRUE,
-   color = "mode", fill = "mode",
-   palette = "jco")
-dat_all %>% group_by(mode) %>% summarise(mean_rt = mean(rt_num*1000)) %>% select(mode,mean_rt)
  
- ```
-
 # check for practice effect
 
  ```{r }
@@ -114,114 +157,10 @@ head(dat_trial_n)
 dat_trial_n %>% group_by(prob_code) %>% summarise(block_order = paste(block_number[1],block_number[2],block_number[3],block_number[4])) %>% 
     count(block_order)
 
-
-
-if(FALSE){
-
-ggbarplot(dat_trial_n, x = "block_number",y = "accuracy",
-   add = "mean", rug = TRUE,
-   fill= "block_number", 
-   merge=TRUE,
-   title= "all modes", 
-   palette = "jco") + gradient_color("red")
-cor_mat <- as.matrix(cbind(dat_trial_n$accuracy,dat_trial_n$block_number))
-rcorr(cor_mat)
-
-
-dat_trial_n_vis <-  dat_trial_n %>% filter(mode %in% c("single", "dual_vis"))
-ggbarplot(dat_trial_n_vis, x = "block_number",y = "accuracy",
-   add = "mean", rug = TRUE,
-   fill= "block_number", 
-   merge=TRUE,
-   title= "single and vis", 
-   palette = "jco") + gradient_color("red")
-cor_mat <- as.matrix(cbind(dat_trial_n$accuracy,dat_trial_n$block_number))
-rcorr(cor_mat)
-
-dat_trial_n_phon <-  dat_trial_n %>% filter(mode %in% c("single", "dual_phon"))
-ggbarplot(dat_trial_n_phon, x = "block_number",y = "accuracy",
-   add = "mean", rug = TRUE,
-   fill= "block_number", 
-   merge=TRUE,
-   title= "single and phon", 
-   palette = "jco") + gradient_color("red")
-cor_mat <- as.matrix(cbind(dat_trial_n$accuracy,dat_trial_n$block_number))
-rcorr(cor_mat)
-
-dat_trial_n_rig <-  dat_trial_n %>% filter(mode %in% c("single","dual_rig"))
-ggbarplot(dat_trial_n_rig, x = "block_number",y = "accuracy",
-   add = "mean", rug = TRUE,
-   fill= "block_number", 
-   title= "single and RIG", 
-   merge=TRUE,
-   palette = "jco") + gradient_color("red")
-cor_mat <- as.matrix(cbind(dat_trial_n$accuracy,dat_trial_n$block_number))
-rcorr(cor_mat)
-
-
-dat_trial_n <- dat_trial_n %>% group_by(prob_code) %>% summarise(block_order = paste(block_number[1],block_number[2],block_number[3],block_number[4]))
-head(dat_trial_n)
-}
-
- ```
- 
- ```{r }
- # get descirptives for our participants.
-
- summary(dat_all)
- dat_all %>% group_by(prob_code) %>% summarise(demo_sex = demo_sex[1]) %>% count(demo_sex)
-dat_age <- dat_all %>% group_by(prob_code) %>% summarise(demo_age = demo_age[1]) 
- mean(dat_age$demo_age)
- sd(dat_age$demo_age)
-     
-dat_all %>% group_by(prob_code) %>% summarise(os = os[1])  %>% count(os)
-dat_demo %>% count(Student)
-dat_demo %>% count(Studienrichtung)
-dat_demo %>% count(Bildungsabschluss)
-summary(dat_demo$Mathematiknote)
-sd(dat_demo$Mathematiknote)
-
- ```
- 
- ```{r }
- dat_plot <- dat_accuracy %>% group_by(prob_code,mode) %>% summarise(accuracy = mean(accuracy))
-ggdensity(dat_plot, x = "accuracy",
-   add = "mean", rug = TRUE,
-   color = "mode", fill = "mode",
-   palette = "jco")
-
-dat_plot %>% group_by(mode) %>% summarise(mean_acc = mean(accuracy))
- 
- ```
-  ```{r }
-ggdensity(dat_accuracy_dual, x = "accuracy",
-   add = "mean", rug = TRUE,
-   color = "mode", fill = "mode",
-   palette = "jco")
-
-dat_accuracy_dual %>% group_by(mode) %>% summarise(mean_acc = mean(accuracy),sd= sd(accuracy))
- 
- ```
- 
-  ```{r }
-ggboxplot(dat_all, x = "mode", y = "rt_num",
-                color = "mode", palette ="jco"
-                , shape = "mode")
- 
- ```
-
- ```{r}
-#TODO: check for pratice effect.
-#dat_all$datetime <- as.Date(dat_all$datetime)
-
- # check means and sds so we get an overview.
-as.data.frame(t(sapply(dat, function(cl) list(means=mean(cl,na.rm=TRUE), sds=sd(cl,na.rm=TRUE)))))
-
-
-
  ```
 
 # rig: test if there is a difference between participants who did a random interval and those who did not.
+
  ```{r }
 
  dat_rig <- dat_all %>% filter(mode == "dual_rig") %>% mutate(rig_random = ifelse(rig_randomness_p < 0.05, 1 , 0)) 
@@ -275,7 +214,8 @@ ggbarplot(
 
  ```
 
-# TODO: function for anova
+# define functions for plotting
+
  ```{r }
 
 
@@ -329,6 +269,7 @@ return(list( desc_plot=desc_plot))
 
  ```
 
+# ACTUAL ANALYSIS:
 # REACTION TIMES: 
 
 ## single task:
@@ -471,7 +412,6 @@ dat$dist_effect_rt_normed <- (dat$mean_rt.1 - dat$mean_rt.2)/((dat$mean_rt.2 + d
 myplot <- plot_one_way(data=dat_rev,dep_var="rev_dist_effect_rt_normed",indep_var="mode",y_label_to_use="reverse distance effect")
 ez_anova_res <- ezANOVA(data=dat_rev,dv=rev_dist_effect_rt_normed,wid=prob_code,within=.(mode),return_aov=TRUE)
 apa.ezANOVA.table(ez_anova_res)
-pairwise.t.test(x=dat_rev$dist_effect_rt_normed, g=factor(dat_rev$mode), paired=TRUE, p.adjust.method="BH")
 
 post_hoc <- dat_rev  %>% pairwise_t_test( rev_dist_effect_rt_normed ~ mode, paired = TRUE, p.adjust.method = "bonferroni") 
 post_hoc
@@ -482,7 +422,6 @@ myplot$desc_plot  +
     geom_bracket(y.position=0.075,xmin=1,xmax=3,label=post_hoc$p.adj.signif[2],tip.length=0.001)+
     geom_bracket(y.position=0.08,xmin=1,xmax=4,label=post_hoc$p.adj.signif[3],tip.length=0.001)
 
-#TODO: do this everywhere!
 
 
  ```
@@ -497,7 +436,9 @@ plot_one_way(data=dat_dist,dep_var="dist_effect_rt_normed",indep_var="mode",y_la
 
 ez_anova_res <- ezANOVA(data=dat_dist,dv=dist_effect_rt_normed,wid=prob_code,within=.(mode),return_aov=TRUE)
 apa.ezANOVA.table(ez_anova_res)
-pairwise.t.test(x=dat_dist$dist_effect_rt_normed, g=factor(dat_dist$mode), paired=TRUE, p.adjust.method="BH")
+
+post_hoc <- dat_dist  %>% pairwise_t_test( dist_effect_rt_normed ~ mode, paired = TRUE, p.adjust.method = "bonferroni") 
+post_hoc
 
 
  ```
@@ -637,7 +578,7 @@ dat$dist_effect_acc_normed <- (dat$accuracy.2 - dat$accuracy.1)/((dat$accuracy.2
 myplot <- plot_one_way(data=dat_rev,dep_var="rev_dist_effect_acc_normed",indep_var="mode",y_label_to_use="reverse distance effect (accuracy)")
 ez_anova_res <- ezANOVA(data=dat_rev,dv=rev_dist_effect_acc_normed,wid=prob_code,within=.(mode),return_aov=TRUE)
 apa.ezANOVA.table(ez_anova_res)
-pairwise.t.test(x=dat_rev$rev_dist_effect_acc_normed, g=factor(dat_rev$mode), paired=TRUE, p.adjust.method="BH")
+
 post_hoc <- dat_rev  %>% pairwise_t_test( rev_dist_effect_acc_normed ~ mode, paired = TRUE, p.adjust.method = "bonferroni") 
 post_hoc
 
@@ -656,7 +597,8 @@ myplot$desc_plot  +
 plot_one_way(data=dat_dist,dep_var="dist_effect_acc_normed",indep_var="mode",y_label_to_use="distance effect (accuracy)")
 ez_anova_res <- ezANOVA(data=dat_dist,dv=dist_effect_acc_normed,wid=prob_code,within=.(mode),return_aov=TRUE)
 apa.ezANOVA.table(ez_anova_res)
-pairwise.t.test(x=dat_dist$dist_effect_acc_normed, g=factor(dat_dist$mode), paired=TRUE, p.adjust.method="BH")
+post_hoc <- dat_dist  %>% pairwise_t_test( dist_effect_acc_normed ~ mode, paired = TRUE, p.adjust.method = "bonferroni") 
+post_hoc
 
  ```
 
@@ -671,7 +613,7 @@ dat <- dat_all  %>% group_by(prob_code,mode,ordered,distance) %>% summarise(mean
 dat_ies <- merge(data.frame(dat_accuracy),data.frame(dat),by=c("prob_code","ordered","distance","mode"))
 dat_ies <- dat_ies %>% mutate(ies = mean_rt/accuracy)
 
-# correlation for speed acc tradeoff
+# correlation to check for speed acc tradeoff
 cor_mat <- as.matrix(cbind(dat_ies$mean_rt,dat_ies$accuracy))
 rcorr(cor_mat)
 
@@ -681,7 +623,6 @@ rcorr(cor_mat)
 
  ```{r warning=FALSE}
 dat <- dat_ies %>% filter(mode=="single")
-
 
 my_plot <- plot_two_way(data=dat,dep_var="ies",indep_vars=c("ordered","distance"),title_to_use="single task")
 ez_anova_res <- ezANOVA(data=dat,dv=ies,wid=prob_code,within=.(distance,ordered),return_aov=TRUE)
@@ -813,7 +754,6 @@ dat$dist_effect_ies_normed <- (dat$ies.1 - dat$ies.2)/((dat$ies.2 + dat$ies.1)/2
 myplot <- plot_one_way(data=dat_rev,dep_var="rev_dist_effect_ies_normed",indep_var="mode",y_label_to_use="reverse distance effect (ies)")
 ez_anova_res <- ezANOVA(data=dat_rev,dv=rev_dist_effect_ies_normed,wid=prob_code,within=.(mode),return_aov=TRUE)
 apa.ezANOVA.table(ez_anova_res)
-pairwise.t.test(x=dat_rev$dist_effect_ies_normed, g=factor(dat_rev$mode), paired=TRUE, p.adjust.method="BH")
 
 post_hoc <- dat_rev  %>% pairwise_t_test( rev_dist_effect_ies_normed ~ mode, paired = TRUE, p.adjust.method = "bonferroni") 
 post_hoc
@@ -837,7 +777,8 @@ plot_one_way(data=dat_dist,dep_var="dist_effect_ies_normed",indep_var="mode",y_l
 ez_anova_res <- ezANOVA(data=dat_dist,dv=dist_effect_ies_normed,wid=prob_code,within=.(mode),return_aov=TRUE)
 apa.ezANOVA.table(ez_anova_res)
 
-pairwise.t.test(x=dat_dist$dist_effect_ies_normed, g=factor(dat_dist$mode), paired=TRUE, p.adjust.method="BH")
+post_hoc <- dat_dist  %>% pairwise_t_test( dist_effect_ies_normed ~ mode, paired = TRUE, p.adjust.method = "bonferroni") 
+post_hoc
  ```
 
 
