@@ -86,7 +86,7 @@ get_data <- function(prob_code,get_dual_diff){
         {
 
 
-            message(paste("filename: ",filename))
+            #message(paste("filename: ",filename))
 
             file <- read.csv(filename,sep=",",as.is=TRUE)
             fields <- names(file)
@@ -229,7 +229,7 @@ get_data <- function(prob_code,get_dual_diff){
             else if (grepl("rig",basename(filename),fixed=TRUE))
             {
 
-                message(paste("filename: in rig ",filename))
+                #message(paste("filename: in rig ",filename))
                 #  get median distance. and use as by
                 distances <- c()
                 for (i in 1:(length(file$rt)-1)){

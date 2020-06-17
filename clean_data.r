@@ -134,7 +134,8 @@ dat <- dat %>% filter(practice == FALSE)
 # exclusion because low accuracy in numeric task
 ########################################################################################################### 
 
-dat_accuracy <- read.csv("data_accuracy_part_mode.csv")
+dat_accuracy <- read.csv("data_accuracy.csv")
+dat_accuracy <- dat_accuracy %>% group_by(prob_code,mode) %>% summarise(accuracy = mean(accuracy))
 
 prob_modes_to_exclude_num <- dat_accuracy %>% filter(accuracy < 0.60) %>% select(prob_code,mode)
 prob_modes_to_exclude_num <- unique(prob_modes_to_exclude_num)
