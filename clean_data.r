@@ -1,6 +1,28 @@
 library(dplyr)
 library(rstatix)
 
+# filter_out_prob_codes_per_mode
+# @param data - the dataframe where we want to exlcude the participant per mode
+# @param exclude_prob_code_mode - dataframe with prob_code and mode as cols (the ones you want to exclude)
+#
+# @ret - the dataframe without the participants (in modes) that are in exclude_prob_code_mode
+#
+
+filter_out_prob_codes_per_mode <- function(data ,exclude_prob_code_mode){
+    for (m in unique(exclude_prob_code_mode$mode)){
+        # for every mode we do the same thing:
+        exclude_part <- exclude_prob_code_mode %>% filter(mode == m)
+        for (p in unique(exclude_part$prob_code)){
+            # exclude the rows where prob_code is our prob code and mode is the mode where he/she wasnt good
+            data <- data %>% filter(!(prob_code == p & mode == m))
+        }
+    }
+
+    return(data)
+}
+
+
+# we write our output to the file exclude part.txt log file. so we can check stuff easily later.
 sink("exclude_part.txt")
 dat <- read.csv("all_data.csv")
 
@@ -77,6 +99,7 @@ read.csv("all_data.csv") %>% distinct(prob_code) %>% filter(!(prob_code %in% dat
 ########################################################################################################### 
 # participants who canceled:                             
 ########################################################################################################### 
+
 # 4 conditions with:
 # 4 practice per trial = 16
 # 40 in the normal tasks = 160
@@ -103,7 +126,7 @@ dat <- dat %>% mutate(screen_ratio=screen_width/screen_height)
 ########################################################################################################### 
 # only correct trials and no practice trials.                             
 ########################################################################################################### 
-#TODO: figure out where to put this:
+
 dat <- dat %>% filter(correct_num == TRUE)
 dat <- dat %>% filter(practice == FALSE)
 
@@ -141,24 +164,9 @@ print("excluded blocks (one mode) total ")
 print(nrow(dat_exclude))
 write.csv(dat_exclude,file="excluded_participants_p_mode.csv",row.names=FALSE,na="")
 
-filter_out_prob_codes_per_mode <- function(data ,exclude_prob_code_mode){
-    for (m in unique(exclude_prob_code_mode$mode)){
-        # for every mode we do the same thing:
-        exclude_part <- exclude_prob_code_mode %>% filter(mode == m)
-        for (p in unique(exclude_part$prob_code)){
-            # exclude the rows where prob_code is our prob code and mode is the mode where he/she wasnt good
-            data <- data %>% filter(!(prob_code == p & mode == m))
-        }
-    }
-
-    return(data)
-}
-
-
 
 # filter based on unrealistic reaction times
 dat <- filter_out_prob_codes_per_mode(dat,dat_exclude)
-#dat <- dat %>% filter(is.na(rt_num) |  rt_num > 0.150)  %>% filter(is.na(rt_dual) | rt_dual > 0.150)
 
 
 
@@ -166,63 +174,41 @@ dat <- filter_out_prob_codes_per_mode(dat,dat_exclude)
 # filter outliers in rt data. for dual task and numeric
 ########################################################################################################### 
 
-if(TRUE){
-    # exclude rts which are more than 3 sds from the mean
+# exclude rts which are more than 3 sds from the mean
 
-    mean_rt_num = mean(dat$rt_num,na.rm=TRUE)
-    mean_rt_dual_phon = mean(dat$rt_dual[(dat$mode == "dual_phon")] ,na.rm=TRUE)
-    mean_rt_dual_vis = mean(dat$rt_dual[(dat$mode == "dual_vis")],na.rm=TRUE)
+mean_rt_num = mean(dat$rt_num,na.rm=TRUE)
+mean_rt_dual_phon = mean(dat$rt_dual[(dat$mode == "dual_phon")] ,na.rm=TRUE)
+mean_rt_dual_vis = mean(dat$rt_dual[(dat$mode == "dual_vis")],na.rm=TRUE)
 
-    sd_rt_num = sd(dat$rt_num,na.rm=TRUE)
-    sd_rt_dual_phon = sd(dat$rt_dual[(dat$mode == "dual_phon") ],na.rm=TRUE)
-    sd_rt_dual_vis = sd(dat$rt_dual[(dat$mode == "dual_vis") ],na.rm=TRUE)
+sd_rt_num = sd(dat$rt_num,na.rm=TRUE)
+sd_rt_dual_phon = sd(dat$rt_dual[(dat$mode == "dual_phon") ],na.rm=TRUE)
+sd_rt_dual_vis = sd(dat$rt_dual[(dat$mode == "dual_vis") ],na.rm=TRUE)
 
 
-    # exclude trials with rt more than 3 sds from the mean. 
-    dat <- dat %>% filter(!is.na(rt_num) &  ((rt_num > mean_rt_num -3*sd_rt_num) & (rt_num < mean_rt_num +3*sd_rt_num)))  %>% 
-        filter((mode != "dual_phon")|(!is.na(rt_dual) 
-                                      &  ((rt_dual> mean_rt_dual_phon -3*sd_rt_dual_phon) 
-                                          & (rt_dual< mean_rt_dual_phon +3*sd_rt_dual_phon)))) %>%
-        filter((mode != "dual_vis")|(!is.na(rt_dual) 
-                                     &  ((rt_dual> mean_rt_dual_vis -3*sd_rt_dual_vis) 
-                                         & (rt_dual< mean_rt_dual_vis +3*sd_rt_dual_vis))))
-
-}else{
-    # alternativet method of finding outliers.
-    # using rstatix package.
-    # remove outliers with boxplot method and IQR (interquartile range)
-    dat <- dat %>% filter((!is_outlier(rt_num)) 
-                          & (!(mode == "dual_phon") | !(is_outlier(rt_dual))) 
-                          & (!(mode == "dual_vis") | !(is_outlier(rt_dual))))
-}
+# exclude trials with rt more than 3 sds from the mean. 
+dat <- dat %>% filter(!is.na(rt_num) &  ((rt_num > mean_rt_num -3*sd_rt_num) & (rt_num < mean_rt_num +3*sd_rt_num)))  %>% 
+    filter((mode != "dual_phon")|(!is.na(rt_dual) 
+                                  &  ((rt_dual> mean_rt_dual_phon -3*sd_rt_dual_phon) 
+                                      & (rt_dual< mean_rt_dual_phon +3*sd_rt_dual_phon)))) %>%
+filter((mode != "dual_vis")|(!is.na(rt_dual) 
+                             &  ((rt_dual> mean_rt_dual_vis -3*sd_rt_dual_vis) 
+                                 & (rt_dual< mean_rt_dual_vis +3*sd_rt_dual_vis))))
 
 
 ########################################################################################################### 
-# exclude trials with rig randomness sig or NA
+# exclude trials with rig randomness (sig) or NA 
+# we leave the significant ones in because it does not matter in the rts.
 ########################################################################################################### 
 dat <- dat %>% filter(( mode != "dual_rig") | (!is.na(rig_randomness_p) ))# &  (rig_randomness_p >= 0.05 )
 
-
-
-
 ########################################################################################################### 
-# filter outliers in rt data. for dual task and numeric
+# write data
 ########################################################################################################### 
-
-all_participants =  read.csv("all_data.csv")
-all_participants =  unique((all_participants["prob_code"]))
-all_participants = as.character(as.matrix(all_participants))
-clean_participants =  unique(dat["prob_code"])
-clean_participants = as.character(as.matrix(clean_participants["prob_code"]))
-
-excluded_participants = all_participants[!(all_participants %in% clean_participants)]
-excluded_participants = as.data.frame(excluded_participants)
-write.csv(excluded_participants,file="excluded_participants.csv",row.names=FALSE,na="")
 
 write.csv(dat,file="data_cleaned.csv",row.names=FALSE,na="")
 
 ########################################################################################################### 
-# filter outliers in rt data. for dual task and numeric
+# print some more stats about the cleaning process
 ########################################################################################################### 
 
 print("excluded participants total:")
@@ -252,3 +238,4 @@ print("n participants after clean (single and dual rig):")
 dat %>%  distinct(prob_code) %>% filter((prob_code %in% dat_single$prob_code) & (prob_code %in% dat_dual_rig$prob_code)) %>% nrow() %>% print()
 
 sink()
+

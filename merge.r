@@ -2,9 +2,16 @@ library(dplyr)
 library(snpar)
 library(lubridate)
 
+#  get_dual_diff
+#
+# calculate the difficulty of a given dual stim. because i forgot to add it in the experiment
+# luckily we have the complete dual stims in the data as a string.
+# @param vec: - a vector with the dual stims (i.e. TZRF_TZRF for phonological or {0,1},... for visual)
+#
+# @ret the difficulty of the stims
+#
 get_dual_diff <- function(vec){
 
-    # calculate the difficulty of a given dual stim. because i forgot to add it in the experiment
     char_vec <- as.character(vec)
     difficulty <- c()
 
@@ -18,11 +25,14 @@ get_dual_diff <- function(vec){
         }
         else{
             str_as_char_vec <- strsplit(char_vec[i],"")[[1]]
+
             if("{" %in% str_as_char_vec){
+                # visual task
                 diff <- floor(length(which(str_as_char_vec == "{"))/2)
                 difficulty <- append(difficulty,c(diff))
             }
             else{
+                # phonological task
                 diff <- floor(length(str_as_char_vec)/2)
                 difficulty <- append(difficulty,c(diff))
             }
@@ -32,11 +42,19 @@ get_dual_diff <- function(vec){
     return(difficulty)
 }
 
+#  get_data
+#
+# gets all available data for a prob_code from the data folder.
+# @param prob_code: - the participants code to get data for. (filenames with this prob code in the data should start with it)
+# @param get_dual_diff: - function to calculate the difficulty of a dual stim
+#
+# @ret a data frame with all data for the participant
+#
 get_data <- function(prob_code,get_dual_diff){
 
     filenames <- list.files("data/",pattern="*.csv$",full.names=TRUE)
 
-    # get a vec for every col
+    # get a vec for every col in the dataframe
     rt_num <- c()
     correct_num <- c()
 
@@ -59,9 +77,11 @@ get_data <- function(prob_code,get_dual_diff){
 
     client_info <- c()
 
+    # we go trough all the files in the folder
     for (filename in filenames){
 
 
+        # and if it starts with our prob_code we know we have found an interesting one
         if(startsWith(basename(filename),prob_code))
         {
 
@@ -70,6 +90,9 @@ get_data <- function(prob_code,get_dual_diff){
 
             file <- read.csv(filename,sep=",",as.is=TRUE)
             fields <- names(file)
+
+            # here we check what kind of file it is.
+            # depending on wich file it is we add some data and set the rest NA
             if (grepl("single",basename(filename),fixed=TRUE))
             {
 
@@ -207,7 +230,7 @@ get_data <- function(prob_code,get_dual_diff){
             {
 
                 message(paste("filename: in rig ",filename))
-                # TODO: get median distance. and use as by
+                #  get median distance. and use as by
                 distances <- c()
                 for (i in 1:(length(file$rt)-1)){
                     distances <- append(distances,(file$rt[i+1] - file$rt[i]))
@@ -216,30 +239,8 @@ get_data <- function(prob_code,get_dual_diff){
 
                 is_in_interval_vec <- c()
 
-                # TODO: check how many distances are above or below the median.
-                print("rig test ")
-                print("median")
-                print(median(distances))
-                # TODO: find the duration of the task
-                # TODO: use max time
-
-                # selector for one method or the other.
-                if (FALSE){
-                interval_vec <- seq(from = 0, to = max(file$rt), by = 1)#median(distances))
-                for (i in 1:(length(interval_vec)-1)){
-
-                    between <- file  %>% filter(rt < interval_vec[i+1]) %>% filter(rt > interval_vec[i])
-
-                    if(nrow(between) != 0){
-
-                    is_in_interval_vec <- append(is_in_interval_vec,1)
-                    }
-                    else{
-                    is_in_interval_vec <- append(is_in_interval_vec,0)
-                    }
-
-                }
-                }else{
+                #  check how many distances are above or below the median.
+                # depending on the value (above or below median) we give it a 0 or a 1
                 for( i in distances){
                     if(i < median(distances)){
                         is_in_interval_vec <- append(is_in_interval_vec,1)
@@ -248,23 +249,15 @@ get_data <- function(prob_code,get_dual_diff){
                     }
 
                 }
-                }
 
+                # now we can calculate the runs test for our vector of 0s and 1s
                 is_in_interval_vec <- unlist(is_in_interval_vec)
-                print(is_in_interval_vec,use.names = FALSE)
-
                 runs_test <- runs.test(is_in_interval_vec, exact = FALSE, alternative = c("two.sided"))
-                print(runs_test)
-
+                # and add it to our data
                 rig_randomness_p <- runs_test$p.value
-
                 rig_randomness_runs <- runs_test$statistic
                 rig_randomness_1s <- length(is_in_interval_vec[is_in_interval_vec == 1])
                 rig_randomness_0s <- length(is_in_interval_vec[is_in_interval_vec == 0])
-                print(rig_randomness_0s)
-                print(rig_randomness_1s)
-                print(rig_randomness_runs)
-                print(names(runs_test))
 
             }
 
@@ -274,10 +267,10 @@ get_data <- function(prob_code,get_dual_diff){
 
     }
 
-    # TODO: get other cols
+    # get demo cols
     dat_demo <- read.csv("data/demo_data.csv")
     dat_demo <-  dat_demo %>% filter(probanden_code == prob_code)
-    print(head(dat_demo))
+
     if(nrow(dat_demo) == 0){
         demo_sex <- NA
         demo_age <- NA
@@ -314,6 +307,7 @@ get_data <- function(prob_code,get_dual_diff){
 
 
 
+    # now we merge all the cols into a dataframe.
     data <- data.frame(prob_code, rt_num, correct_num,numbers, ordered, ascending, descending, distance, datetime, rt_dual, correct_dual, mode,dual_stim,practice,rig_randomness_p,rig_randomness_runs,rig_randomness_1s,rig_randomness_0s,demo_sex,demo_age,demo_rl,demo_drogen,demo_alkohol,demo_dyslex,demo_adhs)
     data["dual_diff"] <- get_dual_diff(data$dual_stim)
 
@@ -334,12 +328,19 @@ get_data <- function(prob_code,get_dual_diff){
 }
 
 
+#  get_unique_prob_codes
+#
+# goes through all the files in the data folder and gets the prob code column
+# then returns only unique prob codes.
+# @ret a vector of all the unique prob codes we have in the data folder.
+#
+
 get_unique_prob_codes <- function(){
     filenames <- list.files("data/",pattern="*.csv$",full.names=TRUE)
     all_prob_codes <- c()
     for (filename in filenames){
 
-        #print(filename)
+        ##print(filename)
         file <- read.csv(filename,stringsAsFactors=FALSE,colClasses=c('character'))
         # we dont have a prob code for client info but it does not really matter because its in the filename
         if ("prob_code" %in% colnames(file)){
@@ -354,15 +355,19 @@ get_unique_prob_codes <- function(){
 }
 
 
+# main:
+
 prob_codes <- get_unique_prob_codes()
 all_data_frames <- list()
+# get all the data for all prob_codes
 for (i in seq_along(prob_codes)){
     data <- get_data(prob_codes[i],get_dual_diff)
-    #if(nrow(data) != 0){
     all_data_frames[[i]] <- data
-    # }
 
 }
+
+
+# merge them into one big datafile.
 first_df <- all_data_frames[[1]]
 
 if (length(all_data_frames) > 1){
@@ -370,7 +375,5 @@ for (i in 2:length(all_data_frames)){
     first_df <- rbind(first_df,all_data_frames[[i]])
 }
 }
-
-print(names(first_df))
 
 write.csv(first_df,file="all_data.csv",row.names=FALSE,na="")

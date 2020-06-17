@@ -53,11 +53,32 @@ summary(dat_all)
 
 
 dat_dual_diff <- dat_all %>% filter(mode=="dual_vis")
+dat_dual_diff <- dat_dual_diff %>% group_by(prob_code) %>% summarise(dual_diff = (dual_diff[1]))
 summary(dat_dual_diff$dual_diff)
+range(dat_dual_diff$dual_diff,na.rm=TRUE)
+# get the mode:
+names(sort(-table(dat_dual_diff$dual_diff)))[1]
+
+dat_dual_diff  %>% gghistogram( x = "dual_diff",
+   add = "mean", rug = TRUE,
+   palette = "jco") %>% ggpar(xticks.by=1,xlab="difficulty",xlim=c(3,11))
+
+
+
+hist(dat_dual_diff$dual_diff)
+
+
 sd(dat_dual_diff$dual_diff)
 dat_dual_diff <- dat_all %>% filter(mode=="dual_phon")
+dat_dual_diff <- dat_dual_diff %>% group_by(prob_code) %>% summarise(dual_diff = (dual_diff[1]))
 summary(dat_dual_diff$dual_diff)
 sd(dat_dual_diff$dual_diff)
+
+dat_dual_diff  %>% gghistogram( x = "dual_diff",
+   add = "mean", rug = TRUE,
+   palette = "jco") %>% ggpar(xticks.by=1,xlab="difficulty",xlim=c(3,11))
+
+hist(dat_dual_diff$dual_diff)
 
 ```
 
@@ -200,7 +221,7 @@ as.data.frame(t(sapply(dat, function(cl) list(means=mean(cl,na.rm=TRUE), sds=sd(
 
  ```
 
-# TODO: rig stuff.
+# rig: test if there is a difference between participants who did a random interval and those who did not.
  ```{r }
 
  dat_rig <- dat_all %>% filter(mode == "dual_rig") %>% mutate(rig_random = ifelse(rig_randomness_p < 0.05, 1 , 0)) 
@@ -218,10 +239,12 @@ ggbarplot(
           add="mean_se",
         fill = "rig_random",
         palette = "jco",
+        label=TRUE,
         ,xlab= "RIG task random"
         ,ylab= "reaction time in ms"
           )+ 
- stat_compare_means(method= "t.test", paired=FALSE,label="p.signif", label.x = 1.5)+ # Add significance levels
+    geom_bracket(y.position=1350,xmin=1,xmax=2,label="ns")+
+# stat_compare_means(method= "t.test", paired=FALSE,label="p.signif", label.x = 1.5)+ # Add significance levels
     theme_apa()
 
 
@@ -239,11 +262,13 @@ ggbarplot(
           y="accuracy",
           add="mean_se",
         fill = "rig_random",
+        label=TRUE,
         palette = "jco",
         ,xlab= "RIG task random"
         ,ylab= "accuracy"
           )+ 
- stat_compare_means(method= "t.test", paired=FALSE,label="p.signif", label.x = 1.5)+ # Add significance levels
+# stat_compare_means(method= "t.test", paired=FALSE,label="p.signif", label.x = 1.5)+ # Add significance levels
+    geom_bracket(y.position=1,xmin=1,xmax=2,label="ns")+
     theme_apa()
 
 
