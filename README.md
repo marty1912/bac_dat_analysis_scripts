@@ -30,9 +30,9 @@ if you are using windows you can install the ubuntu subsystem for windows or sim
 
 ## Analysis
 
-You can find the final analysis html output in the [releases](releases/) section.
+You can find the final analysis html output in the [releases](https://github.com/marty1912/bac_dat_analysis_scripts/releases) section.
 
-After you run ./merge_and_zip.sh you can do the analysis using the R markdown script an_final.Rmd. 
+Also if you run ./merge_and_zip.sh you can do the analysis using the R markdown script an_final.Rmd. 
 To create a html analysis file open it with R studio and press the knit button.
 
 
